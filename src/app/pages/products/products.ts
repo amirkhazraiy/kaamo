@@ -16,6 +16,8 @@ export class ProductsPage {
 
   readonly searchTerm = signal<string>('');
   readonly selectedBrand = signal<string>('all');
+  readonly selectedProduct = signal<Product | null>(null);
+  readonly selectedImageIndex = signal<number>(0);
 
   readonly products = this.productService.products;
   readonly isLoading = this.productService.isLoading;
@@ -38,6 +40,12 @@ export class ProductsPage {
     });
   });
 
+  readonly selectedImage = computed<string | null>(() => {
+    const product = this.selectedProduct();
+
+    return product?.images[this.selectedImageIndex()] ?? null;
+  });
+
   constructor() {
     this.productService.loadProducts();
   }
@@ -54,6 +62,40 @@ export class ProductsPage {
 
   formatCount(value: number): string {
     return this.numberFormatter.format(value);
+  }
+
+  openAlbum(product: Product): void {
+    this.selectedProduct.set(product);
+    this.selectedImageIndex.set(0);
+  }
+
+  closeAlbum(): void {
+    this.selectedProduct.set(null);
+    this.selectedImageIndex.set(0);
+  }
+
+  showPreviousImage(): void {
+    const product = this.selectedProduct();
+
+    if (!product) {
+      return;
+    }
+
+    this.selectedImageIndex.update((index) =>
+      index === 0 ? product.images.length - 1 : index - 1,
+    );
+  }
+
+  showNextImage(): void {
+    const product = this.selectedProduct();
+
+    if (!product) {
+      return;
+    }
+
+    this.selectedImageIndex.update((index) =>
+      index === product.images.length - 1 ? 0 : index + 1,
+    );
   }
 
   trackByProductId(_: number, product: Product): number {

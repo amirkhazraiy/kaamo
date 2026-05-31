@@ -3,6 +3,10 @@ import { Injectable, inject, signal } from '@angular/core';
 import { finalize } from 'rxjs';
 import { Product } from '../models/product.model';
 
+type ProductResponse = Omit<Product, 'images'> & {
+  images?: readonly string[];
+};
+
 @Injectable({
   providedIn: 'root',
 })
@@ -18,14 +22,21 @@ export class ProductService {
     this.error.set(null);
 
     this.http
-      .get<readonly Product[]>('assets/data/products.json')
+      .get<readonly ProductResponse[]>('assets/data/products.json')
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
-        next: (products) => this.products.set(products),
+        next: (products) => this.products.set(products.map((product) => this.withAlbum(product))),
         error: () => {
           this.products.set([]);
           this.error.set('امکان بارگذاری محصولات وجود ندارد. لطفا دوباره تلاش کنید.');
         },
       });
+  }
+
+  private withAlbum(product: ProductResponse): Product {
+    return {
+      ...product,
+      images: product.images?.length ? product.images : [product.image, product.image, product.image],
+    };
   }
 }

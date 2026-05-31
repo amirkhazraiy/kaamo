@@ -55,8 +55,60 @@
   } @else {
     <section class="catalog__grid" aria-label="محصولات">
       @for (product of filteredProducts(); track product.id) {
-        <app-product-card [product]="product" />
+        <app-product-card [product]="product" (imageSelected)="openAlbum($event)" />
       }
     </section>
   }
 </main>
+
+@if (selectedProduct(); as product) {
+  <section class="album" role="dialog" aria-modal="true" [attr.aria-label]="product.name">
+    <button class="album__backdrop" type="button" aria-label="بستن آلبوم" (click)="closeAlbum()"></button>
+
+    <div class="album__panel" dir="rtl">
+      <header class="album__header">
+        <div>
+          <p>{{ product.brand }}</p>
+          <h2>{{ product.name }}</h2>
+        </div>
+        <button class="album__close" type="button" aria-label="بستن" (click)="closeAlbum()">×</button>
+      </header>
+
+      <div class="album__viewer">
+        <button class="album__nav album__nav--next" type="button" aria-label="عکس بعدی" (click)="showNextImage()">
+          ›
+        </button>
+
+        @if (selectedImage(); as image) {
+          <img [src]="image" [alt]="product.name" />
+        }
+
+        <button
+          class="album__nav album__nav--previous"
+          type="button"
+          aria-label="عکس قبلی"
+          (click)="showPreviousImage()"
+        >
+          ‹
+        </button>
+      </div>
+
+      <footer class="album__footer">
+        <span>
+          {{ formatCount(selectedImageIndex() + 1) }} از {{ formatCount(product.images.length) }}
+        </span>
+
+        <div class="album__dots" aria-label="تصاویر آلبوم">
+          @for (image of product.images; track $index) {
+            <button
+              type="button"
+              [class.album__dot--active]="$index === selectedImageIndex()"
+              [attr.aria-label]="'نمایش عکس ' + formatCount($index + 1)"
+              (click)="selectedImageIndex.set($index)"
+            ></button>
+          }
+        </div>
+      </footer>
+    </div>
+  </section>
+}

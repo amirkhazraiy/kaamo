@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { Product } from '../../models/product.model';
 
 @Component({
@@ -12,8 +12,13 @@ export class ProductCard {
   private readonly numberFormatter = new Intl.NumberFormat('fa-IR');
 
   readonly product = input.required<Product>();
+  readonly imageSelected = output<Product>();
 
   formatNumber(value: number): string {
     return this.numberFormatter.format(value);
+  }
+
+  openAlbum(): void {
+    this.imageSelected.emit(this.product());
   }
 }

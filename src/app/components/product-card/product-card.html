@@ -1,5 +1,13 @@
 <article class="product-card" dir="rtl">
-  <img class="product-card__image" [src]="product().image" [alt]="product().name" />
+  <button
+    class="product-card__image-button"
+    type="button"
+    [attr.aria-label]="'مشاهده آلبوم ' + product().name"
+    (click)="openAlbum()"
+  >
+    <img class="product-card__image" [src]="product().image" [alt]="product().name" />
+    <span class="product-card__badge">{{ formatNumber(product().images.length) }} عکس</span>
+  </button>
 
   <div class="product-card__content">
     <p class="product-card__brand">{{ product().brand }}</p>
