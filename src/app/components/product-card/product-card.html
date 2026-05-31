@@ -1,0 +1,19 @@
+<article class="product-card" dir="rtl">
+  <img class="product-card__image" [src]="product().image" [alt]="product().name" />
+
+  <div class="product-card__content">
+    <p class="product-card__brand">{{ product().brand }}</p>
+    <h2>{{ product().name }}</h2>
+
+    <dl class="product-card__meta">
+      <div>
+        <dt>تعداد نفرات</dt>
+        <dd>{{ formatNumber(product().persons) }} نفر</dd>
+      </div>
+      <div>
+        <dt>تعداد پارچه</dt>
+        <dd>{{ formatNumber(product().pieces) }} پارچه</dd>
+      </div>
+    </dl>
+  </div>
+</article>

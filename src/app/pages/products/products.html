@@ -1,0 +1,62 @@
+<main class="catalog" dir="rtl">
+  <section class="catalog__header" aria-labelledby="catalog-title">
+    <div>
+      <p class="catalog__eyebrow">کاتالوگ سرویس غذاخوری آرکوپال</p>
+      <h1 id="catalog-title">سرویس‌های غذاخوری شیک برای هر سلیقه</h1>
+      <p class="catalog__intro">
+        مدل‌های متنوع آرکوپال و اوپال را بر اساس نام محصول و برند جست‌وجو کنید.
+      </p>
+    </div>
+
+    <div class="catalog__stats" aria-label="خلاصه کاتالوگ">
+      <span>{{ formatCount(filteredProducts().length) }}</span>
+      <small>محصول مطابق</small>
+    </div>
+  </section>
+
+  <section class="catalog__filters" aria-label="فیلتر محصولات">
+    <label class="field">
+      <span>جست‌وجوی محصول</span>
+      <input
+        type="search"
+        placeholder="نام محصول را وارد کنید"
+        [value]="searchTerm()"
+        (input)="updateSearchTerm($event)"
+      />
+    </label>
+
+    <label class="field">
+      <span>برند</span>
+      <select [value]="selectedBrand()" (change)="updateBrand($event)">
+        <option value="all">همه برندها</option>
+        @for (brand of brands(); track brand) {
+          <option [value]="brand">{{ brand }}</option>
+        }
+      </select>
+    </label>
+  </section>
+
+  @if (isLoading()) {
+    <section class="catalog__state" aria-live="polite">
+      <span class="loader" aria-hidden="true"></span>
+      <h2>در حال بارگذاری محصولات</h2>
+      <p>کمی صبر کنید، کاتالوگ آماده می‌شود.</p>
+    </section>
+  } @else if (error()) {
+    <section class="catalog__state catalog__state--error" aria-live="polite">
+      <h2>خطایی رخ داد</h2>
+      <p>{{ error() }}</p>
+    </section>
+  } @else if (filteredProducts().length === 0) {
+    <section class="catalog__state" aria-live="polite">
+      <h2>محصولی پیدا نشد</h2>
+      <p>نام دیگری جست‌وجو کنید یا برند را تغییر دهید.</p>
+    </section>
+  } @else {
+    <section class="catalog__grid" aria-label="محصولات">
+      @for (product of filteredProducts(); track product.id) {
+        <app-product-card [product]="product" />
+      }
+    </section>
+  }
+</main>
