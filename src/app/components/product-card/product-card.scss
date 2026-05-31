@@ -1,6 +1,6 @@
 .product-card {
   display: grid;
-  grid-template-columns: 178px minmax(0, 1fr);
+  grid-template-columns: minmax(150px, 210px) minmax(0, 1fr);
   direction: ltr;
   min-height: 214px;
   overflow: hidden;
@@ -22,6 +22,7 @@
 
 .product-card__image {
   width: 100%;
+  max-width: 210px;
   height: 100%;
   min-height: 214px;
   object-fit: cover;
@@ -91,6 +92,7 @@ h2 {
 
   .product-card__image {
     aspect-ratio: 16 / 10;
+    max-width: 100%;
     min-height: 0;
   }
 
