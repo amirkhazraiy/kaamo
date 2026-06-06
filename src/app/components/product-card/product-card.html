@@ -2,7 +2,7 @@
   <button
     class="product-card__image-button"
     type="button"
-    [attr.aria-label]="'مشاهده آلبوم ' + product().name"
+    [attr.aria-label]="'مشاهده محصول ' + product().name"
     (click)="openAlbum()"
   >
     <img class="product-card__image" [src]="product().image" [alt]="product().name" />
@@ -10,8 +10,17 @@
   </button>
 
   <div class="product-card__content">
-    <p class="product-card__brand">{{ product().brand }}</p>
-    <h2>{{ product().name }}</h2>
+    <div>
+      <p class="product-card__brand">{{ product().brand }}</p>
+      <h2>{{ product().name }}</h2>
+    </div>
+
+    <div class="product-card__commerce">
+      <strong>{{ formatPrice(product().discountPrice ?? product().price) }}</strong>
+      <span [class.product-card__stock--out]="product().stock === 0">
+        {{ product().stock > 0 ? 'موجود' : 'ناموجود' }}
+      </span>
+    </div>
 
     <dl class="product-card__meta">
       <div>

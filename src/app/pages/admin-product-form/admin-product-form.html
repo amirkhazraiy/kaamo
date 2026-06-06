@@ -1,0 +1,123 @@
+<main class="admin-form-page" dir="rtl">
+  <header class="admin-form-header">
+    <div>
+      <a routerLink="/admin/products">بازگشت به محصولات</a>
+      <h1>{{ isEditing ? 'ویرایش محصول' : 'افزودن محصول' }}</h1>
+    </div>
+    <button type="submit" form="product-form" [disabled]="saving()">
+      {{ saving() ? 'در حال ذخیره...' : 'ذخیره محصول' }}
+    </button>
+  </header>
+
+  @if (isEditing && !product() && !isLoading()) {
+    <section class="admin-form-state">محصول مورد نظر پیدا نشد.</section>
+  } @else {
+    <form id="product-form" class="admin-form" [formGroup]="form" (ngSubmit)="save()">
+      <section class="form-section" aria-labelledby="basic-title">
+        <h2 id="basic-title">اطلاعات اصلی</h2>
+
+        <div class="form-grid">
+          <label>
+            <span>نام محصول</span>
+            <input type="text" formControlName="name" />
+          </label>
+
+          <label>
+            <span>SKU</span>
+            <input type="text" formControlName="sku" />
+          </label>
+
+          <label>
+            <span>دسته‌بندی</span>
+            <input type="text" formControlName="category" />
+          </label>
+
+          <label>
+            <span>برند</span>
+            <input type="text" formControlName="brand" />
+          </label>
+        </div>
+      </section>
+
+      <section class="form-section" aria-labelledby="pricing-title">
+        <h2 id="pricing-title">قیمت و موجودی</h2>
+
+        <div class="form-grid">
+          <label>
+            <span>قیمت</span>
+            <input type="number" min="0" formControlName="price" />
+          </label>
+
+          <label>
+            <span>قیمت تخفیف</span>
+            <input type="number" min="0" formControlName="discountPrice" />
+          </label>
+
+          <label>
+            <span>موجودی</span>
+            <input type="number" min="0" formControlName="stock" />
+          </label>
+
+          <label>
+            <span>آستانه کمبود موجودی</span>
+            <input type="number" min="0" formControlName="lowStockThreshold" />
+          </label>
+        </div>
+      </section>
+
+      <section class="form-section" aria-labelledby="spec-title">
+        <h2 id="spec-title">مشخصات محصول</h2>
+
+        <div class="form-grid">
+          <label>
+            <span>تعداد نفرات</span>
+            <input type="number" min="1" formControlName="persons" />
+          </label>
+
+          <label>
+            <span>تعداد پارچه</span>
+            <input type="number" min="1" formControlName="pieces" />
+          </label>
+
+          <label>
+            <span>وضعیت</span>
+            <select formControlName="status">
+              <option value="active">فعال</option>
+              <option value="inactive">غیرفعال</option>
+            </select>
+          </label>
+
+          <label class="checkbox-field">
+            <input type="checkbox" formControlName="featured" />
+            <span>محصول ویژه</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="form-section" aria-labelledby="description-title">
+        <h2 id="description-title">توضیحات و تصاویر</h2>
+
+        <label>
+          <span>توضیح کوتاه</span>
+          <textarea rows="3" maxlength="200" formControlName="shortDescription"></textarea>
+        </label>
+
+        <label>
+          <span>توضیح کامل</span>
+          <textarea rows="6" formControlName="fullDescription"></textarea>
+        </label>
+
+        <label>
+          <span>تصاویر، هر URL در یک خط</span>
+          <textarea rows="5" formControlName="imagesText"></textarea>
+        </label>
+
+        <p class="slug-preview">Slug پیشنهادی: {{ suggestedSlug() }}</p>
+      </section>
+
+      @if (error(); as errorMessage) {
+        <strong class="form-error">{{ errorMessage }}</strong>
+      }
+    </form>
+  }
+</main>

@@ -1,0 +1,120 @@
+<main class="product-details" dir="rtl">
+  <a class="product-details__back" routerLink="/">بازگشت به کاتالوگ</a>
+
+  @if (isLoading()) {
+    <section class="product-details__state" aria-live="polite">
+      <span class="loader" aria-hidden="true"></span>
+      <h1>در حال بارگذاری محصول</h1>
+      <p>کمی صبر کنید، اطلاعات محصول آماده می‌شود.</p>
+    </section>
+  } @else if (error()) {
+    <section class="product-details__state product-details__state--error" aria-live="polite">
+      <h1>خطایی رخ داد</h1>
+      <p>{{ error() }}</p>
+    </section>
+  } @else if (product(); as product) {
+    <section class="product-details__hero" aria-labelledby="product-title">
+      <div class="gallery">
+        <div class="gallery__viewer">
+          <button
+            class="gallery__nav gallery__nav--next"
+            type="button"
+            aria-label="عکس بعدی"
+            (click)="showNextImage()"
+          >
+            ›
+          </button>
+
+          @if (selectedImage(); as image) {
+            <img [src]="image" [alt]="product.name" />
+          }
+
+          <button
+            class="gallery__nav gallery__nav--previous"
+            type="button"
+            aria-label="عکس قبلی"
+            (click)="showPreviousImage()"
+          >
+            ‹
+          </button>
+        </div>
+
+        <div class="gallery__thumbs" aria-label="تصاویر محصول">
+          @for (image of product.images; track $index) {
+            <button
+              type="button"
+              [class.gallery__thumb--active]="$index === selectedImageIndex()"
+              [attr.aria-label]="'نمایش عکس ' + formatCount($index + 1)"
+              (click)="selectImage($index)"
+            >
+              <img [src]="image" [alt]="product.name" />
+            </button>
+          }
+        </div>
+      </div>
+
+      <aside class="product-summary">
+        <p class="product-summary__brand">{{ product.brand }}</p>
+        <h1 id="product-title">{{ product.name }}</h1>
+        <p class="product-summary__description">{{ product.shortDescription }}</p>
+
+        <div class="product-summary__price">
+          <strong>{{ formatPrice(product.discountPrice ?? product.price) }}</strong>
+          <span [class.product-summary__stock--out]="product.stock === 0">
+            {{ product.stock > 0 ? 'موجود در انبار' : 'ناموجود' }}
+          </span>
+        </div>
+
+        <dl class="specs" aria-label="مشخصات محصول">
+          <div>
+            <dt>برند</dt>
+            <dd>{{ product.brand }}</dd>
+          </div>
+          <div>
+            <dt>نام محصول</dt>
+            <dd>{{ product.name }}</dd>
+          </div>
+          <div>
+            <dt>دسته‌بندی</dt>
+            <dd>{{ product.category }}</dd>
+          </div>
+          <div>
+            <dt>SKU</dt>
+            <dd>{{ product.sku }}</dd>
+          </div>
+          <div>
+            <dt>تعداد نفرات</dt>
+            <dd>{{ formatCount(product.persons) }} نفر</dd>
+          </div>
+          <div>
+            <dt>تعداد پارچه</dt>
+            <dd>{{ formatCount(product.pieces) }} پارچه</dd>
+          </div>
+        </dl>
+      </aside>
+    </section>
+
+    @if (similarProducts().length > 0) {
+      <section class="similar-products" aria-labelledby="similar-products-title">
+        <header>
+          <p>{{ product.brand }}</p>
+          <h2 id="similar-products-title">محصولات مشابه</h2>
+        </header>
+
+        <div class="similar-products__grid">
+          @for (similarProduct of similarProducts(); track similarProduct.id) {
+            <app-product-card
+              [product]="similarProduct"
+              (imageSelected)="openProduct($event)"
+            />
+          }
+        </div>
+      </section>
+    }
+  } @else {
+    <section class="product-details__state" aria-live="polite">
+      <h1>محصول پیدا نشد</h1>
+      <p>این محصول در کاتالوگ فعلی وجود ندارد.</p>
+    </section>
+  }
+</main>

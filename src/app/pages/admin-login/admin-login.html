@@ -1,0 +1,26 @@
+<main class="admin-login" dir="rtl">
+  <section class="admin-login__panel" aria-labelledby="admin-login-title">
+    <a routerLink="/" class="admin-login__back">بازگشت به فروشگاه</a>
+    <p>مدیریت فروشگاه</p>
+    <h1 id="admin-login-title">ورود ادمین</h1>
+
+    <form (ngSubmit)="login()">
+      <label>
+        <span>رمز عبور</span>
+        <input
+          type="password"
+          name="password"
+          autocomplete="current-password"
+          [value]="password()"
+          (input)="updatePassword($event)"
+        />
+      </label>
+
+      @if (error(); as errorMessage) {
+        <strong class="admin-login__error">{{ errorMessage }}</strong>
+      }
+
+      <button type="submit">ورود</button>
+    </form>
+  </section>
+</main>

@@ -94,6 +94,34 @@ h2 {
   line-height: 1.25;
 }
 
+.product-card__commerce {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  strong {
+    color: #15262d;
+    font-size: 1.12rem;
+    font-weight: 900;
+  }
+
+  span {
+    flex: 0 0 auto;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #e6f6ef;
+    color: #067647;
+    font-size: 0.78rem;
+    font-weight: 900;
+  }
+
+  .product-card__stock--out {
+    background: #fff1f0;
+    color: #b42318;
+  }
+}
+
 .product-card__meta {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

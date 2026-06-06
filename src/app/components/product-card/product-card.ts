@@ -10,12 +10,17 @@ import { Product } from '../../models/product.model';
 })
 export class ProductCard {
   private readonly numberFormatter = new Intl.NumberFormat('fa-IR');
+  private readonly priceFormatter = new Intl.NumberFormat('fa-IR');
 
   readonly product = input.required<Product>();
   readonly imageSelected = output<Product>();
 
   formatNumber(value: number): string {
     return this.numberFormatter.format(value);
+  }
+
+  formatPrice(value: number): string {
+    return `${this.priceFormatter.format(value)} تومان`;
   }
 
   openAlbum(): void {

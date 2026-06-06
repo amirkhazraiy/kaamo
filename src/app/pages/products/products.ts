@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { ProductCard } from '../../components/product-card/product-card';
 import { Product } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
@@ -12,6 +13,7 @@ import { ProductService } from '../../services/product.service';
 })
 export class ProductsPage {
   private readonly productService = inject(ProductService);
+  private readonly router = inject(Router);
   private readonly numberFormatter = new Intl.NumberFormat('fa-IR');
 
   readonly searchTerm = signal<string>('');
@@ -19,7 +21,9 @@ export class ProductsPage {
   readonly selectedProduct = signal<Product | null>(null);
   readonly selectedImageIndex = signal<number>(0);
 
-  readonly products = this.productService.products;
+  readonly products = computed<readonly Product[]>(() =>
+    this.productService.products().filter((product) => product.status === 'active'),
+  );
   readonly isLoading = this.productService.isLoading;
   readonly error = this.productService.error;
 
@@ -65,8 +69,7 @@ export class ProductsPage {
   }
 
   openAlbum(product: Product): void {
-    this.selectedProduct.set(product);
-    this.selectedImageIndex.set(0);
+    void this.router.navigate(['/products', product.id]);
   }
 
   closeAlbum(): void {

@@ -1,0 +1,108 @@
+<main class="admin-shell" dir="rtl">
+  <aside class="admin-sidebar" aria-label="ناوبری مدیریت">
+    <a routerLink="/" class="admin-sidebar__brand">Arcopal Shop</a>
+    <nav>
+      <a class="admin-sidebar__link admin-sidebar__link--active" routerLink="/admin/products">
+        محصولات
+      </a>
+      <span class="admin-sidebar__link admin-sidebar__link--disabled">سفارش‌ها</span>
+    </nav>
+  </aside>
+
+  <section class="admin-content">
+    <header class="admin-header">
+      <div>
+        <p>پنل مدیریت</p>
+        <h1>محصولات</h1>
+      </div>
+
+      <div class="admin-header__actions">
+        <button type="button" class="button button--ghost" (click)="logout()">خروج</button>
+        <a routerLink="/admin/products/new" class="button">افزودن محصول</a>
+      </div>
+    </header>
+
+    <section class="admin-filters" aria-label="فیلتر محصولات">
+      <label>
+        <span>جستجو</span>
+        <input
+          type="search"
+          placeholder="نام محصول یا SKU"
+          [value]="searchTerm()"
+          (input)="updateSearchTerm($event)"
+        />
+      </label>
+
+      <label>
+        <span>دسته‌بندی</span>
+        <select [value]="selectedCategory()" (change)="updateCategory($event)">
+          <option value="all">همه دسته‌ها</option>
+          @for (category of categories(); track category) {
+            <option [value]="category">{{ category }}</option>
+          }
+        </select>
+      </label>
+    </section>
+
+    <section class="admin-table-wrap" aria-label="جدول محصولات">
+      @if (isLoading()) {
+        <div class="admin-state">در حال بارگذاری محصولات...</div>
+      } @else if (filteredProducts().length === 0) {
+        <div class="admin-state">محصولی پیدا نشد.</div>
+      } @else {
+        <table>
+          <thead>
+            <tr>
+              <th>تصویر</th>
+              <th>نام</th>
+              <th>SKU</th>
+              <th>قیمت</th>
+              <th>موجودی</th>
+              <th>دسته‌بندی</th>
+              <th>وضعیت</th>
+              <th>آخرین تغییر</th>
+              <th>عملیات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of filteredProducts(); track product.id) {
+              <tr>
+                <td>
+                  <img class="product-thumb" [src]="product.image" [alt]="product.name" />
+                </td>
+                <td>
+                  <strong>{{ product.name }}</strong>
+                  <small>{{ product.brand }}</small>
+                </td>
+                <td>{{ product.sku }}</td>
+                <td>{{ formatPrice(product.discountPrice ?? product.price) }}</td>
+                <td>
+                  <span [class.stock-low]="product.stock <= product.lowStockThreshold">
+                    {{ product.stock }}
+                  </span>
+                </td>
+                <td>{{ product.category }}</td>
+                <td>
+                  <span class="status" [class.status--inactive]="product.status === 'inactive'">
+                    {{ product.status === 'active' ? 'فعال' : 'غیرفعال' }}
+                  </span>
+                </td>
+                <td>{{ formatDate(product.lastUpdated) }}</td>
+                <td>
+                  <div class="row-actions">
+                    <a [routerLink]="['/admin/products/edit', product.id]" class="icon-button">
+                      ویرایش
+                    </a>
+                    <button type="button" class="icon-button icon-button--danger" (click)="deleteProduct(product.id)">
+                      حذف
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </section>
+  </section>
+</main>
