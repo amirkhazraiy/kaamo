@@ -18,6 +18,7 @@ export class ProductsPage {
 
   readonly searchTerm = signal<string>('');
   readonly selectedBrand = signal<string>('all');
+  readonly selectedCategory = signal<string>('all');
   readonly selectedProduct = signal<Product | null>(null);
   readonly selectedImageIndex = signal<number>(0);
 
@@ -32,15 +33,26 @@ export class ProductsPage {
     return [...brandSet].sort((first, second) => first.localeCompare(second));
   });
 
+  readonly categories = computed<readonly string[]>(() => {
+    const categorySet = new Set(this.products().map((product) => product.category));
+    return [...categorySet].sort((first, second) => first.localeCompare(second));
+  });
+
+  readonly featuredProducts = computed<readonly Product[]>(() =>
+    this.products().filter((product) => product.featured).slice(0, 4),
+  );
+
   readonly filteredProducts = computed<readonly Product[]>(() => {
     const normalizedSearch = this.searchTerm().trim().toLowerCase();
     const brand = this.selectedBrand();
+    const category = this.selectedCategory();
 
     return this.products().filter((product) => {
       const matchesSearch = product.name.toLowerCase().includes(normalizedSearch);
       const matchesBrand = brand === 'all' || product.brand === brand;
+      const matchesCategory = category === 'all' || product.category === category;
 
-      return matchesSearch && matchesBrand;
+      return matchesSearch && matchesBrand && matchesCategory;
     });
   });
 
@@ -62,6 +74,10 @@ export class ProductsPage {
   updateBrand(event: Event): void {
     const select = event.target as HTMLSelectElement;
     this.selectedBrand.set(select.value);
+  }
+
+  updateCategory(category: string): void {
+    this.selectedCategory.set(category);
   }
 
   formatCount(value: number): string {

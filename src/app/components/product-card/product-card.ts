@@ -23,6 +23,22 @@ export class ProductCard {
     return `${this.priceFormatter.format(value)} تومان`;
   }
 
+  hasDiscount(): boolean {
+    const product = this.product();
+    return Boolean(product.discountPrice && product.discountPrice < product.price);
+  }
+
+  discountPercent(): string {
+    const product = this.product();
+
+    if (!product.discountPrice || product.discountPrice >= product.price) {
+      return '';
+    }
+
+    const percent = Math.round(((product.price - product.discountPrice) / product.price) * 100);
+    return `${this.formatNumber(percent)}٪`;
+  }
+
   openAlbum(): void {
     this.imageSelected.emit(this.product());
   }

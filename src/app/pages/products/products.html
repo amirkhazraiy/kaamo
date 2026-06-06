@@ -1,30 +1,69 @@
-<main class="catalog" dir="rtl">
-  <section class="catalog__header" aria-labelledby="catalog-title">
-    <div>
-      <p class="catalog__eyebrow">کاتالوگ سرویس غذاخوری آرکوپال</p>
-      <h1 id="catalog-title">سرویس‌های غذاخوری شیک برای هر سلیقه</h1>
-      <p class="catalog__intro">
-        مدل‌های متنوع آرکوپال و اوپال را بر اساس نام محصول و برند جست‌وجو کنید.
-      </p>
-    </div>
+<main class="storefront" dir="rtl">
+  <a class="announcement" href="tel:02155321762">
+    جهت ارتباط با پشتیبانی تماس بگیرید 02155321762
+  </a>
 
-    <div class="catalog__stats" aria-label="خلاصه کاتالوگ">
-      <span>{{ formatCount(filteredProducts().length) }}</span>
-      <small>محصول مطابق</small>
-    </div>
-  </section>
+  <header class="store-header" aria-label="ناوبری فروشگاه">
+    <a class="store-header__logo" href="/" aria-label="آرکوپال استور">
+      <span>Arcopal</span>
+      <strong>آرکوپال استور</strong>
+    </a>
 
-  <section class="catalog__filters" aria-label="فیلتر محصولات">
-    <label class="field">
-      <span>جست‌وجوی محصول</span>
+    <label class="store-search">
+      <span>جست‌وجو</span>
       <input
         type="search"
-        placeholder="نام محصول را وارد کنید"
+        placeholder="جست‌وجوی نام محصول"
         [value]="searchTerm()"
         (input)="updateSearchTerm($event)"
       />
     </label>
 
+    <nav class="store-header__links" aria-label="لینک‌های اصلی">
+      <a href="/">خانه</a>
+      <a href="#products">همه محصولات</a>
+      <a href="tel:02155321762">تماس</a>
+    </nav>
+  </header>
+
+  <section class="hero" aria-labelledby="store-title">
+    <div class="hero__copy">
+      <p class="hero__eyebrow">فروشگاه تخصصی سرویس غذاخوری</p>
+      <h1 id="store-title">آرکوپال، اوپال و ظروف پذیرایی برای خرید روزانه</h1>
+      <p>
+        مدل‌های پرفروش را بر اساس دسته، برند و نام محصول مرور کنید و با یک نگاه قیمت،
+        تخفیف و موجودی هر سرویس را ببینید.
+      </p>
+    </div>
+
+    <div class="hero__deal" aria-label="پیشنهاد فروشگاه">
+      <span>فروش ویژه</span>
+      <strong>{{ formatCount(featuredProducts().length || filteredProducts().length) }}</strong>
+      <small>مدل منتخب آماده بررسی</small>
+    </div>
+  </section>
+
+  <section class="category-strip" aria-label="دسته‌بندی محصولات">
+    <button
+      type="button"
+      [class.category-strip__item--active]="selectedCategory() === 'all'"
+      (click)="updateCategory('all')"
+    >
+      همه محصولات
+    </button>
+
+    @for (category of categories(); track category) {
+      <button
+        type="button"
+        [class.category-strip__item--active]="selectedCategory() === category"
+        (click)="updateCategory(category)"
+      >
+        {{ category }}
+      </button>
+    }
+  </section>
+
+  <section class="filter-bar" aria-label="فیلتر محصولات">
     <label class="field">
       <span>برند</span>
       <select [value]="selectedBrand()" (change)="updateBrand($event)">
@@ -34,29 +73,56 @@
         }
       </select>
     </label>
+
+    <div class="filter-bar__count" aria-label="تعداد محصولات مطابق">
+      <span>{{ formatCount(filteredProducts().length) }}</span>
+      <small>محصول مطابق</small>
+    </div>
   </section>
 
+  @if (!isLoading() && !error() && featuredProducts().length > 0) {
+    <section class="section-block" aria-labelledby="featured-title">
+      <div class="section-block__header">
+        <h2 id="featured-title">پیشنهادهای منتخب</h2>
+        <a href="#products">مشاهده همه</a>
+      </div>
+
+      <div class="product-row">
+        @for (product of featuredProducts(); track product.id) {
+          <app-product-card [product]="product" (imageSelected)="openAlbum($event)" />
+        }
+      </div>
+    </section>
+  }
+
   @if (isLoading()) {
-    <section class="catalog__state" aria-live="polite">
+    <section class="catalog-state" aria-live="polite">
       <span class="loader" aria-hidden="true"></span>
       <h2>در حال بارگذاری محصولات</h2>
-      <p>کمی صبر کنید، کاتالوگ آماده می‌شود.</p>
+      <p>کمی صبر کنید، فروشگاه آماده می‌شود.</p>
     </section>
   } @else if (error()) {
-    <section class="catalog__state catalog__state--error" aria-live="polite">
+    <section class="catalog-state catalog-state--error" aria-live="polite">
       <h2>خطایی رخ داد</h2>
       <p>{{ error() }}</p>
     </section>
   } @else if (filteredProducts().length === 0) {
-    <section class="catalog__state" aria-live="polite">
+    <section class="catalog-state" aria-live="polite">
       <h2>محصولی پیدا نشد</h2>
-      <p>نام دیگری جست‌وجو کنید یا برند را تغییر دهید.</p>
+      <p>نام دیگری جست‌وجو کنید یا فیلترها را تغییر دهید.</p>
     </section>
   } @else {
-    <section class="catalog__grid" aria-label="محصولات">
-      @for (product of filteredProducts(); track product.id) {
-        <app-product-card [product]="product" (imageSelected)="openAlbum($event)" />
-      }
+    <section class="section-block" id="products" aria-labelledby="products-title">
+      <div class="section-block__header">
+        <h2 id="products-title">همه محصولات</h2>
+        <span>{{ formatCount(filteredProducts().length) }} کالا</span>
+      </div>
+
+      <div class="products-grid" aria-label="محصولات">
+        @for (product of filteredProducts(); track product.id) {
+          <app-product-card [product]="product" (imageSelected)="openAlbum($event)" />
+        }
+      </div>
     </section>
   }
 </main>
