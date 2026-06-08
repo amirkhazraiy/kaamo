@@ -1,48 +1,99 @@
-import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Injectable, inject, signal } from '@angular/core';
+import { Observable, tap } from 'rxjs';
+import { API_BASE_URL } from '../config/api.config';
 
-const AUTH_KEY = 'arcopal_admin_auth';
-const ADMIN_PASSWORD = 'admin123';
+const TOKEN_KEY = 'arcopal_admin_token';
+const USER_KEY = 'arcopal_admin_user';
+
+export interface AdminUser {
+  id: number;
+  email: string;
+  name: string | null;
+  role: string;
+}
+
+interface LoginResponse {
+  message: string;
+  token: string;
+  user: AdminUser;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class AdminAuthService {
-  readonly isLoggedIn = signal<boolean>(this.readAuthState());
+  private readonly http = inject(HttpClient);
 
-  login(password: string): boolean {
-    const isValidPassword = password === ADMIN_PASSWORD;
+  readonly currentUser = signal<AdminUser | null>(this.readUser());
+  readonly isLoggedIn = signal<boolean>(this.readToken() !== null);
 
-    if (isValidPassword) {
-      this.isLoggedIn.set(true);
-      this.persistAuthState(true);
-    }
+  login(email: string, password: string): Observable<LoginResponse> {
+    return this.http
+      .post<LoginResponse>(`${API_BASE_URL}/auth/login`, {
+        email: email.trim().toLowerCase(),
+        password,
+      })
+      .pipe(
+        tap((response) => {
+          this.persistSession(response.token, response.user);
+          this.currentUser.set(response.user);
+          this.isLoggedIn.set(true);
+        }),
+      );
+  }
 
-    return isValidPassword;
+  getToken(): string | null {
+    return this.readToken();
   }
 
   logout(): void {
+    this.currentUser.set(null);
     this.isLoggedIn.set(false);
-    this.persistAuthState(false);
+    this.clearSession();
   }
 
-  private readAuthState(): boolean {
+  private readToken(): string | null {
     if (typeof localStorage === 'undefined') {
-      return false;
+      return null;
     }
 
-    return localStorage.getItem(AUTH_KEY) === 'true';
+    return localStorage.getItem(TOKEN_KEY);
   }
 
-  private persistAuthState(isLoggedIn: boolean): void {
+  private readUser(): AdminUser | null {
+    if (typeof localStorage === 'undefined') {
+      return null;
+    }
+
+    const storedUser = localStorage.getItem(USER_KEY);
+
+    if (!storedUser) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(storedUser) as AdminUser;
+    } catch {
+      return null;
+    }
+  }
+
+  private persistSession(token: string, user: AdminUser): void {
     if (typeof localStorage === 'undefined') {
       return;
     }
 
-    if (isLoggedIn) {
-      localStorage.setItem(AUTH_KEY, 'true');
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+  }
+
+  private clearSession(): void {
+    if (typeof localStorage === 'undefined') {
       return;
     }
 
-    localStorage.removeItem(AUTH_KEY);
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
   }
 }

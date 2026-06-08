@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
-import { finalize } from 'rxjs';
+import { Observable, catchError, finalize, map, of, switchMap, tap } from 'rxjs';
+import { API_BASE_URL } from '../config/api.config';
 import { Product, ProductStatus } from '../models/product.model';
 import { createProductSlug } from '../utils/product-slug';
 
@@ -9,12 +10,53 @@ type ProductResponse = Partial<Omit<Product, 'images'>> &
     images?: readonly string[];
   };
 
+interface ApiProduct {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  discountPrice: number | null;
+  stock: number;
+  category: string;
+  imageUrl: string;
+  imageUrls?: readonly string[] | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  sku: string | null;
+  brand: string | null;
+  persons: number | null;
+  pieces: number | null;
+  lowStockThreshold: number | null;
+  featured: boolean;
+}
+
+interface ProductApiPayload {
+  title: string;
+  description: string;
+  price: number;
+  discountPrice: number | null;
+  stock: number;
+  category: string;
+  imageUrl: string;
+  imageUrls: readonly string[];
+  isActive: boolean;
+  sku: string;
+  brand: string;
+  persons: number;
+  pieces: number;
+  lowStockThreshold: number;
+  featured: boolean;
+}
+
+interface UploadImageResponse {
+  imageUrl: string;
+}
+
 export type ProductDraft = Omit<Product, 'id' | 'lastUpdated'> & {
   id?: number;
   lastUpdated?: string;
 };
-
-const STORAGE_KEY = 'shop_products';
 
 @Injectable({
   providedIn: 'root',
@@ -27,16 +69,8 @@ export class ProductService {
   readonly isLoading = signal<boolean>(false);
   readonly error = signal<string | null>(null);
 
-  loadProducts(): void {
-    if (this.hasLoadedProducts || this.isLoading()) {
-      return;
-    }
-
-    const storedProducts = this.readStoredProducts();
-
-    if (storedProducts.length > 0) {
-      this.products.set(storedProducts);
-      this.hasLoadedProducts = true;
+  loadProducts(force = false, useStaticFallback = true): void {
+    if ((!force && this.hasLoadedProducts) || this.isLoading()) {
       return;
     }
 
@@ -44,18 +78,31 @@ export class ProductService {
     this.error.set(null);
 
     this.http
-      .get<readonly ProductResponse[]>('assets/data/products.json')
-      .pipe(finalize(() => this.isLoading.set(false)))
+      .get<readonly ApiProduct[]>(`${API_BASE_URL}/products`)
+      .pipe(
+        switchMap((products) => {
+          const apiProducts = products.map((product) => this.normalizeApiProduct(product));
+
+          if (!useStaticFallback) {
+            return of(apiProducts);
+          }
+
+          return this.loadStaticProductsFallback(apiProducts);
+        }),
+        catchError(() => {
+          if (useStaticFallback) {
+            return this.loadStaticProductsFallback();
+          }
+
+          this.error.set('Unable to load products from the backend.');
+          return of([]);
+        }),
+        finalize(() => this.isLoading.set(false)),
+      )
       .subscribe({
         next: (products) => {
-          const normalizedProducts = products.map((product) => this.normalizeProduct(product));
           this.hasLoadedProducts = true;
-          this.products.set(normalizedProducts);
-          this.persistProducts(normalizedProducts);
-        },
-        error: () => {
-          this.products.set([]);
-          this.error.set('امکان بارگذاری محصولات وجود ندارد. لطفا دوباره تلاش کنید.');
+          this.products.set(products);
         },
       });
   }
@@ -79,41 +126,46 @@ export class ProductService {
     return this.products().filter((product) => product.status === 'active');
   }
 
-  createProduct(productDraft: ProductDraft): Product {
-    const products = this.products();
-    const product = this.normalizeProduct({
-      ...productDraft,
-      id: this.createNextId(products),
-      lastUpdated: new Date().toISOString(),
-    });
-
-    this.setProducts([...products, product]);
-
-    return product;
+  createProduct(productDraft: ProductDraft): Observable<Product> {
+    return this.http
+      .post<ApiProduct>(`${API_BASE_URL}/products`, this.toApiPayload(productDraft))
+      .pipe(
+        map((product) => this.normalizeApiProduct(product)),
+        tap((product) => {
+          this.products.update((products) => [product, ...products]);
+          this.hasLoadedProducts = true;
+        }),
+      );
   }
 
-  updateProduct(productId: number, productDraft: ProductDraft): Product | null {
-    const products = this.products();
-    const currentProduct = this.findProductById(productId);
-
-    if (!currentProduct) {
-      return null;
-    }
-
-    const updatedProduct = this.normalizeProduct({
-      ...currentProduct,
-      ...productDraft,
-      id: productId,
-      lastUpdated: new Date().toISOString(),
-    });
-
-    this.setProducts(products.map((product) => (product.id === productId ? updatedProduct : product)));
-
-    return updatedProduct;
+  updateProduct(productId: number, productDraft: ProductDraft): Observable<Product> {
+    return this.http
+      .patch<ApiProduct>(`${API_BASE_URL}/products/${productId}`, this.toApiPayload(productDraft))
+      .pipe(
+        map((product) => this.normalizeApiProduct(product)),
+        tap((updatedProduct) => {
+          this.products.update((products) =>
+            products.map((product) => (product.id === productId ? updatedProduct : product)),
+          );
+        }),
+      );
   }
 
-  deleteProduct(productId: number): void {
-    this.setProducts(this.products().filter((product) => product.id !== productId));
+  deleteProduct(productId: number): Observable<void> {
+    return this.http
+      .delete<void>(`${API_BASE_URL}/products/${productId}`)
+      .pipe(
+        tap(() => {
+          this.products.update((products) => products.filter((product) => product.id !== productId));
+        }),
+      );
+  }
+
+  uploadProductImage(file: File): Observable<UploadImageResponse> {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    return this.http.post<UploadImageResponse>(`${API_BASE_URL}/uploads/product-image`, formData);
   }
 
   isSkuTaken(sku: string, ignoredProductId?: number): boolean {
@@ -124,14 +176,100 @@ export class ProductService {
     );
   }
 
-  private setProducts(products: readonly Product[]): void {
-    this.products.set(products);
-    this.hasLoadedProducts = true;
-    this.persistProducts(products);
+  private loadStaticProductsFallback(baseProducts: readonly Product[] = []): Observable<readonly Product[]> {
+    return this.http.get<readonly ProductResponse[]>('assets/data/products.json').pipe(
+      map((products) => this.mergeStaticProducts(baseProducts, products)),
+      catchError(() => {
+        this.error.set('Unable to load products. Please try again.');
+        return of([]);
+      }),
+    );
   }
 
-  private createNextId(products: readonly Product[]): number {
-    return Math.max(0, ...products.map((product) => product.id)) + 1;
+  private mergeStaticProducts(
+    baseProducts: readonly Product[],
+    staticProducts: readonly ProductResponse[],
+  ): readonly Product[] {
+    const usedIds = new Set(baseProducts.map((product) => product.id));
+    const usedSkus = new Set(baseProducts.map((product) => product.sku.trim().toLowerCase()));
+    let nextStaticId = Math.max(100000, ...baseProducts.map((product) => product.id)) + 1;
+    const normalizedStaticProducts: Product[] = [];
+
+    for (const staticProduct of staticProducts) {
+      const product = this.normalizeProduct(staticProduct);
+      const normalizedSku = product.sku.trim().toLowerCase();
+
+      if (usedSkus.has(normalizedSku)) {
+        continue;
+      }
+
+      if (usedIds.has(product.id)) {
+        product.id = nextStaticId;
+        nextStaticId += 1;
+      }
+
+      usedIds.add(product.id);
+      usedSkus.add(normalizedSku);
+      normalizedStaticProducts.push(product);
+    }
+
+    return [...baseProducts, ...normalizedStaticProducts];
+  }
+
+  private toApiPayload(product: ProductDraft): ProductApiPayload {
+    const imageUrls = product.images.length > 0 ? product.images : [product.image];
+
+    return {
+      title: product.name.trim(),
+      description:
+        product.fullDescription.trim() ||
+        product.shortDescription.trim() ||
+        `${product.name} product description`,
+      price: product.price,
+      discountPrice: product.discountPrice ?? null,
+      stock: product.stock,
+      category: product.category.trim(),
+      imageUrl: imageUrls[0],
+      imageUrls,
+      isActive: product.status === 'active',
+      sku: product.sku.trim(),
+      brand: product.brand.trim(),
+      persons: product.persons,
+      pieces: product.pieces,
+      lowStockThreshold: product.lowStockThreshold,
+      featured: product.featured,
+    };
+  }
+
+  private normalizeApiProduct(product: ApiProduct): Product {
+    const brand = product.brand?.trim() || 'Arcopal';
+    const name = product.title.trim();
+    const images = product.imageUrls?.length
+      ? product.imageUrls.map((imageUrl) => imageUrl.trim()).filter(Boolean)
+      : [product.imageUrl.trim()];
+    const image = images[0] || product.imageUrl.trim();
+
+    return {
+      id: product.id,
+      image,
+      images,
+      slug: createProductSlug({ brand, name }),
+      sku: product.sku?.trim() || `ARC-${product.id}`,
+      brand,
+      name,
+      category: product.category.trim(),
+      price: product.price,
+      discountPrice: product.discountPrice,
+      stock: product.stock,
+      lowStockThreshold: product.lowStockThreshold ?? 5,
+      persons: product.persons ?? 1,
+      pieces: product.pieces ?? 1,
+      shortDescription: product.description.slice(0, 200),
+      fullDescription: product.description,
+      status: product.isActive ? 'active' : 'inactive',
+      featured: product.featured,
+      lastUpdated: product.updatedAt,
+    };
   }
 
   private normalizeProduct(product: ProductResponse | ProductDraft): Product {
@@ -146,7 +284,7 @@ export class ProductService {
       sku: product.sku?.trim() || `ARC-${product.id ?? Date.now()}`,
       brand: product.brand,
       name: product.name,
-      category: product.category?.trim() || 'سرویس غذاخوری',
+      category: product.category?.trim() || 'Dinnerware',
       price: product.price ?? 0,
       discountPrice: product.discountPrice ?? null,
       stock: product.stock ?? 0,
@@ -155,45 +293,13 @@ export class ProductService {
       pieces: product.pieces,
       shortDescription:
         product.shortDescription?.trim() ||
-        `${product.name}، مناسب ${product.persons} نفر با ${product.pieces} پارچه.`,
+        `${product.name}, suitable for ${product.persons} people with ${product.pieces} pieces.`,
       fullDescription:
         product.fullDescription?.trim() ||
-        `${product.name} از برند ${product.brand} برای استفاده روزمره و پذیرایی طراحی شده است.`,
+        `${product.name} by ${product.brand} is designed for daily use and hosting.`,
       status,
       featured: product.featured ?? false,
       lastUpdated: product.lastUpdated ?? new Date().toISOString(),
     };
-  }
-
-  private readStoredProducts(): readonly Product[] {
-    if (!this.canUseLocalStorage()) {
-      return [];
-    }
-
-    const storedProducts = localStorage.getItem(STORAGE_KEY);
-
-    if (!storedProducts) {
-      return [];
-    }
-
-    try {
-      const products = JSON.parse(storedProducts) as readonly ProductResponse[];
-
-      return products.map((product) => this.normalizeProduct(product));
-    } catch {
-      return [];
-    }
-  }
-
-  private persistProducts(products: readonly Product[]): void {
-    if (!this.canUseLocalStorage()) {
-      return;
-    }
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
-  }
-
-  private canUseLocalStorage(): boolean {
-    return typeof localStorage !== 'undefined';
   }
 }

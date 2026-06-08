@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 import { AdminAuthService } from '../../services/admin-auth.service';
 
 @Component({
@@ -14,8 +15,15 @@ export class AdminLoginPage {
   private readonly authService = inject(AdminAuthService);
   private readonly router = inject(Router);
 
+  readonly email = signal<string>('admin@example.com');
   readonly password = signal<string>('');
+  readonly isLoading = signal<boolean>(false);
   readonly error = signal<string | null>(null);
+
+  updateEmail(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.email.set(input.value);
+  }
 
   updatePassword(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -23,13 +31,25 @@ export class AdminLoginPage {
   }
 
   login(): void {
-    const isLoggedIn = this.authService.login(this.password());
+    this.error.set(null);
 
-    if (!isLoggedIn) {
-      this.error.set('رمز عبور اشتباه است.');
+    if (!this.email().trim() || !this.password()) {
+      this.error.set('Email and password are required.');
       return;
     }
 
-    void this.router.navigate(['/admin/products']);
+    this.isLoading.set(true);
+
+    this.authService
+      .login(this.email(), this.password())
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
+        next: () => {
+          void this.router.navigate(['/admin/products']);
+        },
+        error: (error) => {
+          this.error.set(error?.error?.message ?? 'Login failed. Please try again.');
+        },
+      });
   }
 }

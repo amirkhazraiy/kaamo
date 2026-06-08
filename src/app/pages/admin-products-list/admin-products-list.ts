@@ -25,6 +25,7 @@ export class AdminProductsListPage {
 
   readonly products = this.productService.products;
   readonly isLoading = this.productService.isLoading;
+  readonly error = this.productService.error;
 
   readonly categories = computed<readonly string[]>(() => {
     const categories = new Set(this.products().map((product) => product.category));
@@ -49,7 +50,7 @@ export class AdminProductsListPage {
   });
 
   constructor() {
-    this.productService.loadProducts();
+    this.productService.loadProducts(false, false);
   }
 
   updateSearchTerm(event: Event): void {
@@ -77,7 +78,13 @@ export class AdminProductsListPage {
       return;
     }
 
-    this.productService.deleteProduct(productId);
+    this.productService.deleteProduct(productId).subscribe({
+      error: (error) => {
+        this.productService.error.set(
+          error?.error?.message ?? 'امکان حذف محصول وجود ندارد. دوباره تلاش کنید.',
+        );
+      },
+    });
   }
 
   logout(): void {

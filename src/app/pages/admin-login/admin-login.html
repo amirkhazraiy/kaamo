@@ -6,6 +6,17 @@
 
     <form (ngSubmit)="login()">
       <label>
+        <span>ایمیل</span>
+        <input
+          type="email"
+          name="email"
+          autocomplete="username"
+          [value]="email()"
+          (input)="updateEmail($event)"
+        />
+      </label>
+
+      <label>
         <span>رمز عبور</span>
         <input
           type="password"
@@ -20,7 +31,9 @@
         <strong class="admin-login__error">{{ errorMessage }}</strong>
       }
 
-      <button type="submit">ورود</button>
+      <button type="submit" [disabled]="isLoading()">
+        {{ isLoading() ? 'در حال ورود...' : 'ورود' }}
+      </button>
     </form>
   </section>
 </main>

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
 import { ProductDraft, ProductService } from '../../services/product.service';
 import { createProductSlug } from '../../utils/product-slug';
 
@@ -19,6 +20,7 @@ export class AdminProductFormPage {
   private patchedProductId: number | null = null;
 
   readonly saving = signal<boolean>(false);
+  readonly uploadingImage = signal<boolean>(false);
   readonly error = signal<string | null>(null);
 
   readonly productId = Number(this.route.snapshot.paramMap.get('id')) || null;
@@ -58,7 +60,7 @@ export class AdminProductFormPage {
   }
 
   constructor() {
-    this.productService.loadProducts();
+    this.productService.loadProducts(false, false);
 
     effect(() => {
       const product = this.product();
@@ -86,6 +88,41 @@ export class AdminProductFormPage {
         featured: product.featured,
       });
     });
+  }
+
+  uploadImage(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      this.error.set('فقط فایل تصویر قابل آپلود است.');
+      input.value = '';
+      return;
+    }
+
+    this.error.set(null);
+    this.uploadingImage.set(true);
+
+    this.productService
+      .uploadProductImage(file)
+      .pipe(finalize(() => this.uploadingImage.set(false)))
+      .subscribe({
+        next: ({ imageUrl }) => {
+          const currentImages = this.form.controls.imagesText.value.trim();
+          this.form.controls.imagesText.setValue(
+            currentImages ? `${currentImages}\n${imageUrl}` : imageUrl,
+          );
+          input.value = '';
+        },
+        error: (error) => {
+          this.error.set(error?.error?.message ?? 'امکان آپلود تصویر وجود ندارد. دوباره تلاش کنید.');
+          input.value = '';
+        },
+      });
   }
 
   save(): void {
@@ -142,13 +179,17 @@ export class AdminProductFormPage {
 
     this.saving.set(true);
 
-    if (this.productId) {
-      this.productService.updateProduct(this.productId, productDraft);
-    } else {
-      this.productService.createProduct(productDraft);
-    }
+    const saveRequest = this.productId
+      ? this.productService.updateProduct(this.productId, productDraft)
+      : this.productService.createProduct(productDraft);
 
-    this.saving.set(false);
-    void this.router.navigate(['/admin/products']);
+    saveRequest.pipe(finalize(() => this.saving.set(false))).subscribe({
+      next: () => {
+        void this.router.navigate(['/admin/products']);
+      },
+      error: (error) => {
+        this.error.set(error?.error?.message ?? 'امکان ذخیره محصول وجود ندارد. دوباره تلاش کنید.');
+      },
+    });
   }
 }
