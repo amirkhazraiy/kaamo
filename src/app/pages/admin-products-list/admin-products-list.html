@@ -13,7 +13,7 @@
     <header class="admin-header">
       <div>
         <p>پنل مدیریت</p>
-        <h1>محصولات</h1>
+        <h1>مدیریت محصولات</h1>
       </div>
 
       <div class="admin-header__actions">
@@ -44,11 +44,18 @@
       </label>
     </section>
 
+    @if (error(); as errorMessage) {
+      <section class="admin-state admin-state--error">{{ errorMessage }}</section>
+    }
+
     <section class="admin-table-wrap" aria-label="جدول محصولات">
       @if (isLoading()) {
         <div class="admin-state">در حال بارگذاری محصولات...</div>
       } @else if (filteredProducts().length === 0) {
-        <div class="admin-state">محصولی پیدا نشد.</div>
+        <div class="admin-state">
+          <p>هنوز محصولی در دیتابیس ثبت نشده است.</p>
+          <a routerLink="/admin/products/new" class="button">افزودن اولین محصول</a>
+        </div>
       } @else {
         <table>
           <thead>

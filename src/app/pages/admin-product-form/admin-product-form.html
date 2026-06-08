@@ -4,7 +4,7 @@
       <a routerLink="/admin/products">بازگشت به محصولات</a>
       <h1>{{ isEditing ? 'ویرایش محصول' : 'افزودن محصول' }}</h1>
     </div>
-    <button type="submit" form="product-form" [disabled]="saving()">
+    <button type="submit" form="product-form" [disabled]="saving() || uploadingImage()">
       {{ saving() ? 'در حال ذخیره...' : 'ذخیره محصول' }}
     </button>
   </header>
@@ -44,7 +44,7 @@
 
         <div class="form-grid">
           <label>
-            <span>قیمت</span>
+            <span>قیمت اصلی</span>
             <input type="number" min="0" formControlName="price" />
           </label>
 
@@ -95,7 +95,15 @@
       </section>
 
       <section class="form-section" aria-labelledby="description-title">
-        <h2 id="description-title">توضیحات و تصاویر</h2>
+        <h2 id="description-title">توضیحات و تصویر</h2>
+
+        <label class="upload-field">
+          <span>آپلود تصویر محصول</span>
+          <input type="file" accept="image/*" [disabled]="uploadingImage()" (change)="uploadImage($event)" />
+          <small>
+            {{ uploadingImage() ? 'در حال آپلود تصویر...' : 'بعد از آپلود، آدرس تصویر خودکار به لیست تصاویر اضافه می‌شود.' }}
+          </small>
+        </label>
 
         <label>
           <span>توضیح کوتاه</span>
@@ -108,7 +116,7 @@
         </label>
 
         <label>
-          <span>تصاویر، هر URL در یک خط</span>
+          <span>آدرس تصاویر، هر URL در یک خط</span>
           <textarea rows="5" formControlName="imagesText"></textarea>
         </label>
 

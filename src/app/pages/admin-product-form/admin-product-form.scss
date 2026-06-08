@@ -114,6 +114,23 @@ textarea {
   }
 }
 
+.upload-field {
+  padding: 14px;
+  border: 1px dashed #9db5b2;
+  border-radius: 8px;
+  background: #f7fbfa;
+
+  input {
+    border: 0;
+    padding-right: 0;
+  }
+
+  small {
+    color: #657980;
+    font-weight: 700;
+  }
+}
+
 .slug-preview {
   margin: 0;
   color: #657980;
