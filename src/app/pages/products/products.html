@@ -23,6 +23,11 @@
       <a href="/">خانه</a>
       <a href="#products">همه محصولات</a>
       <a href="tel:02155321762">تماس</a>
+      @if (isAdminLoggedIn()) {
+        <a class="store-header__admin-link" routerLink="/admin/products">ورود به داشبورد</a>
+      } @else {
+        <a class="store-header__admin-link" routerLink="/admin/login">ورود ادمین</a>
+      }
     </nav>
   </header>
 

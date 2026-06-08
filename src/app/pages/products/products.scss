@@ -109,6 +109,20 @@
       color: #2374ab;
     }
   }
+
+  .store-header__admin-link {
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #2374ab;
+    border-radius: 8px;
+    color: #2374ab;
+    padding: 0 12px;
+
+    &:hover {
+      background: #edf7ff;
+    }
+  }
 }
 
 .hero {

@@ -1,18 +1,20 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ProductCard } from '../../components/product-card/product-card';
 import { Product } from '../../models/product.model';
+import { AdminAuthService } from '../../services/admin-auth.service';
 import { ProductService } from '../../services/product.service';
 
 @Component({
   selector: 'app-products',
-  imports: [ProductCard],
+  imports: [ProductCard, RouterLink],
   templateUrl: './products.html',
   styleUrl: './products.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductsPage {
   private readonly productService = inject(ProductService);
+  private readonly authService = inject(AdminAuthService);
   private readonly router = inject(Router);
   private readonly numberFormatter = new Intl.NumberFormat('fa-IR');
 
@@ -27,6 +29,7 @@ export class ProductsPage {
   );
   readonly isLoading = this.productService.isLoading;
   readonly error = this.productService.error;
+  readonly isAdminLoggedIn = this.authService.isLoggedIn;
 
   readonly brands = computed<readonly string[]>(() => {
     const brandSet = new Set(this.products().map((product) => product.brand));
