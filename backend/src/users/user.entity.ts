@@ -11,24 +11,24 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'nvarchar', length: 255, unique: true })
+  @Column({ type: 'varchar', length: 255, unique: true })
   email: string;
 
-  @Column({ type: 'nvarchar', length: 255, select: false })
+  @Column({ type: 'varchar', length: 255, select: false })
   passwordHash: string;
 
-  @Column({ type: 'nvarchar', length: 120, nullable: true })
+  @Column({ type: 'varchar', length: 120, nullable: true })
   name: string | null;
 
-  @Column({ type: 'nvarchar', length: 50, default: 'admin' })
+  @Column({ type: 'varchar', length: 50, default: 'admin' })
   role: string;
 
-  @Column({ type: 'bit', default: true })
+  @Column({ type: 'boolean', default: true })
   isActive: boolean;
 
-  @CreateDateColumn({ type: 'datetime2' })
+  @CreateDateColumn({ type: 'datetime' })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'datetime2' })
+  @UpdateDateColumn({ type: 'datetime' })
   updatedAt: Date;
 }

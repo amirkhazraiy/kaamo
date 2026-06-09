@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TypeOrmModuleOptions } from '@nestjs/typeorm/dist/interfaces/typeorm-options.interface';
 import { AuthModule } from './auth/auth.module';
 import { Product } from './products/product.entity';
 import { ProductsModule } from './products/products.module';
@@ -24,59 +23,16 @@ import { UsersModule } from './users/users.module';
 })
 export class AppModule {}
 
-function createTypeOrmOptions(config: ConfigService): TypeOrmModuleOptions {
-  const useWindowsAuth = config.get<string>('DB_AUTH_TYPE') === 'windows';
-  const host = config.get<string>('DB_HOST') ?? 'localhost';
-  const port = Number(config.get<string>('DB_PORT') ?? 1433);
-  const database = config.get<string>('DB_NAME');
-  const commonOptions: TypeOrmModuleOptions = {
-    type: 'mssql',
-    host,
-    port,
-    database,
-    entities: [User, Product],
-    synchronize: false,
-    options: {
-      encrypt: config.get<string>('DB_ENCRYPT') === 'true',
-      trustServerCertificate: config.get<string>('DB_TRUST_SERVER_CERTIFICATE') !== 'false',
-      trustedConnection: useWindowsAuth,
-    } as Record<string, unknown>,
-  };
-
-  if (useWindowsAuth) {
-    return {
-      ...commonOptions,
-      driver: require('mssql/msnodesqlv8'),
-      extra: {
-        connectionString: createWindowsConnectionString(config, host, port, database),
-      },
-    };
-  }
-
+function createTypeOrmOptions(config: ConfigService) {
   return {
-    ...commonOptions,
+    type: 'mysql' as const,
+    host: config.get<string>('DB_HOST') ?? 'localhost',
+    port: Number(config.get<string>('DB_PORT') ?? 3306),
     username: config.get<string>('DB_USERNAME'),
     password: config.get<string>('DB_PASSWORD'),
+    database: config.get<string>('DB_NAME'),
+    entities: [User, Product],
+    synchronize: false,
+    charset: 'utf8mb4',
   };
-}
-
-function createWindowsConnectionString(
-  config: ConfigService,
-  host: string,
-  port: number,
-  database: string | undefined,
-): string {
-  const driver = config.get<string>('DB_ODBC_DRIVER') ?? 'ODBC Driver 17 for SQL Server';
-  const encrypt = config.get<string>('DB_ENCRYPT') === 'true' ? 'Yes' : 'No';
-  const trustServerCertificate =
-    config.get<string>('DB_TRUST_SERVER_CERTIFICATE') !== 'false' ? 'Yes' : 'No';
-
-  return [
-    `Driver={${driver}}`,
-    `Server=${host},${port}`,
-    `Database=${database}`,
-    'Trusted_Connection=Yes',
-    `Encrypt=${encrypt}`,
-    `TrustServerCertificate=${trustServerCertificate}`,
-  ].join(';');
 }

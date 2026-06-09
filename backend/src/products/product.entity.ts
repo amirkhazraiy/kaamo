@@ -29,10 +29,10 @@ export class Product {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'nvarchar', length: 200 })
+  @Column({ type: 'varchar', length: 200 })
   title: string;
 
-  @Column({ type: 'nvarchar', length: 'MAX' })
+  @Column({ type: 'text' })
   description: string;
 
   @Column({ type: 'decimal', precision: 18, scale: 2, transformer: { to: Number, from: Number } })
@@ -50,27 +50,26 @@ export class Product {
   @Column({ type: 'int', default: 0 })
   stock: number;
 
-  @Column({ type: 'nvarchar', length: 100 })
+  @Column({ type: 'varchar', length: 100 })
   category: string;
 
-  @Column({ type: 'nvarchar', length: 500 })
+  @Column({ type: 'varchar', length: 500 })
   imageUrl: string;
 
   @Column({
-    type: 'nvarchar',
-    length: 'MAX',
+    type: 'text',
     nullable: true,
     transformer: imageUrlsTransformer,
   })
   imageUrls: string[] | null;
 
-  @Column({ type: 'bit', default: true })
+  @Column({ type: 'boolean', default: true })
   isActive: boolean;
 
-  @Column({ type: 'nvarchar', length: 80, nullable: true })
+  @Column({ type: 'varchar', length: 80, nullable: true })
   sku: string | null;
 
-  @Column({ type: 'nvarchar', length: 100, nullable: true })
+  @Column({ type: 'varchar', length: 100, nullable: true })
   brand: string | null;
 
   @Column({ type: 'int', nullable: true })
@@ -82,12 +81,12 @@ export class Product {
   @Column({ type: 'int', nullable: true })
   lowStockThreshold: number | null;
 
-  @Column({ type: 'bit', default: false })
+  @Column({ type: 'boolean', default: false })
   featured: boolean;
 
-  @CreateDateColumn({ type: 'datetime2' })
+  @CreateDateColumn({ type: 'datetime' })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'datetime2' })
+  @UpdateDateColumn({ type: 'datetime' })
   updatedAt: Date;
 }

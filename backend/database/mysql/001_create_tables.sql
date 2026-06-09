@@ -1,0 +1,46 @@
+CREATE DATABASE IF NOT EXISTS arcopal_store
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE arcopal_store;
+
+CREATE TABLE IF NOT EXISTS users (
+  id INT NOT NULL AUTO_INCREMENT,
+  email VARCHAR(255) NOT NULL,
+  passwordHash VARCHAR(255) NOT NULL,
+  name VARCHAR(120) NULL,
+  role VARCHAR(50) NOT NULL DEFAULT 'admin',
+  isActive BOOLEAN NOT NULL DEFAULT TRUE,
+  createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY UQ_users_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS products (
+  id INT NOT NULL AUTO_INCREMENT,
+  title VARCHAR(200) NOT NULL,
+  description TEXT NOT NULL,
+  price DECIMAL(18, 2) NOT NULL,
+  discountPrice DECIMAL(18, 2) NULL,
+  stock INT NOT NULL DEFAULT 0,
+  category VARCHAR(100) NOT NULL,
+  imageUrl VARCHAR(500) NOT NULL,
+  imageUrls TEXT NULL,
+  isActive BOOLEAN NOT NULL DEFAULT TRUE,
+  sku VARCHAR(80) NULL,
+  brand VARCHAR(100) NULL,
+  persons INT NULL,
+  pieces INT NULL,
+  lowStockThreshold INT NULL,
+  featured BOOLEAN NOT NULL DEFAULT FALSE,
+  createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  INDEX IX_products_category (category),
+  INDEX IX_products_isActive (isActive),
+  CONSTRAINT CK_products_price CHECK (price >= 0),
+  CONSTRAINT CK_products_discountPrice CHECK (discountPrice IS NULL OR discountPrice >= 0),
+  CONSTRAINT CK_products_discount_lt_price CHECK (discountPrice IS NULL OR discountPrice < price),
+  CONSTRAINT CK_products_stock CHECK (stock >= 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

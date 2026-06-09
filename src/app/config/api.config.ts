@@ -1,8 +1,6 @@
 const LOCAL_API_BASE_URL = 'http://localhost:3000/api';
 
-// Replace this with your deployed NestJS backend URL before deploying the Angular app.
-// Example: https://api.your-domain.com/api
-const PRODUCTION_API_BASE_URL = 'https://YOUR_BACKEND_DOMAIN/api';
+const PRODUCTION_API_BASE_URL = 'http://kaamo.ir/api';
 
 function isLocalBrowser(): boolean {
   if (typeof window === 'undefined') {
