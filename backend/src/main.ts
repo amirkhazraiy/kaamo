@@ -1,4 +1,4 @@
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -7,12 +7,34 @@ import { join } from 'path';
 import { AppModule } from './app.module';
 
 async function bootstrap(): Promise<void> {
+  const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
   const expressApp = app.getHttpAdapter().getInstance();
+  const requestLogger = new Logger('HTTP');
 
   expressApp.disable('etag');
   app.use('/uploads', serveStatic(join(process.cwd(), 'uploads')));
+
+  app.use((request: Request, response: Response, next: NextFunction) => {
+    const startedAt = Date.now();
+    const forwardedFor = request.headers['x-forwarded-for'];
+    const clientIp = Array.isArray(forwardedFor)
+      ? forwardedFor[0]
+      : forwardedFor?.split(',')[0]?.trim() || request.ip;
+
+    requestLogger.log(
+      `--> ${request.method} ${request.originalUrl} ip=${clientIp} host=${request.headers.host ?? '-'} ua="${request.headers['user-agent'] ?? '-'}"`,
+    );
+
+    response.on('finish', () => {
+      requestLogger.log(
+        `<-- ${request.method} ${request.originalUrl} status=${response.statusCode} duration=${Date.now() - startedAt}ms`,
+      );
+    });
+
+    next();
+  });
 
   app.enableCors({
     origin: config.get<string>('FRONTEND_ORIGIN') ?? 'http://localhost:4200',
@@ -46,6 +68,7 @@ async function bootstrap(): Promise<void> {
 
   const port = config.get<number>('PORT') ?? 3000;
   await app.listen(port);
+  logger.log(`Nest API is listening on port ${port}`);
 }
 
 void bootstrap();

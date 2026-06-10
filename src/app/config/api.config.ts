@@ -1,6 +1,6 @@
 const LOCAL_API_BASE_URL = 'http://localhost:3000/api';
 
-const PRODUCTION_API_BASE_URL = 'http://kaamo.ir/api';
+const PRODUCTION_API_BASE_URL = '/api';
 
 function isLocalBrowser(): boolean {
   if (typeof window === 'undefined') {

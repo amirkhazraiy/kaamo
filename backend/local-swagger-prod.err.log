@@ -1,0 +1,125 @@
+[31m[Nest] 15312  - [39m06/10/2026, 10:40:05 AM [31m  ERROR[39m [38;5;3m[TypeOrmModule] [39m[31mUnable to connect to the database. Retrying (1)...[39m
+Error: Access denied for user 'kaamo'@'localhost' (using password: YES)
+    at Packet.asError (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\packets\packet.js:791:17)
+    at ClientHandshake.execute (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\commands\command.js:29:26)
+    at PoolConnection.handlePacket (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:552:34)
+    at PacketParser.onPacket (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:102:12)
+    at PacketParser.executeStart (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\packet_parser.js:75:16)
+    at Socket.<anonymous> (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:109:25)
+    at Socket.emit (node:events:518:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+[31m[Nest] 15312  - [39m06/10/2026, 10:40:08 AM [31m  ERROR[39m [38;5;3m[TypeOrmModule] [39m[31mUnable to connect to the database. Retrying (2)...[39m
+Error: Access denied for user 'kaamo'@'localhost' (using password: YES)
+    at Packet.asError (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\packets\packet.js:791:17)
+    at ClientHandshake.execute (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\commands\command.js:29:26)
+    at PoolConnection.handlePacket (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:552:34)
+    at PacketParser.onPacket (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:102:12)
+    at PacketParser.executeStart (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\packet_parser.js:75:16)
+    at Socket.<anonymous> (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:109:25)
+    at Socket.emit (node:events:518:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+[31m[Nest] 15312  - [39m06/10/2026, 10:40:11 AM [31m  ERROR[39m [38;5;3m[TypeOrmModule] [39m[31mUnable to connect to the database. Retrying (3)...[39m
+Error: Access denied for user 'kaamo'@'localhost' (using password: YES)
+    at Packet.asError (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\packets\packet.js:791:17)
+    at ClientHandshake.execute (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\commands\command.js:29:26)
+    at PoolConnection.handlePacket (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:552:34)
+    at PacketParser.onPacket (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:102:12)
+    at PacketParser.executeStart (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\packet_parser.js:75:16)
+    at Socket.<anonymous> (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:109:25)
+    at Socket.emit (node:events:518:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+[31m[Nest] 15312  - [39m06/10/2026, 10:40:14 AM [31m  ERROR[39m [38;5;3m[TypeOrmModule] [39m[31mUnable to connect to the database. Retrying (4)...[39m
+Error: Access denied for user 'kaamo'@'localhost' (using password: YES)
+    at Packet.asError (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\packets\packet.js:791:17)
+    at ClientHandshake.execute (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\commands\command.js:29:26)
+    at PoolConnection.handlePacket (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:552:34)
+    at PacketParser.onPacket (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:102:12)
+    at PacketParser.executeStart (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\packet_parser.js:75:16)
+    at Socket.<anonymous> (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:109:25)
+    at Socket.emit (node:events:518:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+[31m[Nest] 15312  - [39m06/10/2026, 10:40:17 AM [31m  ERROR[39m [38;5;3m[TypeOrmModule] [39m[31mUnable to connect to the database. Retrying (5)...[39m
+Error: Access denied for user 'kaamo'@'localhost' (using password: YES)
+    at Packet.asError (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\packets\packet.js:791:17)
+    at ClientHandshake.execute (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\commands\command.js:29:26)
+    at PoolConnection.handlePacket (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:552:34)
+    at PacketParser.onPacket (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:102:12)
+    at PacketParser.executeStart (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\packet_parser.js:75:16)
+    at Socket.<anonymous> (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:109:25)
+    at Socket.emit (node:events:518:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+[31m[Nest] 15312  - [39m06/10/2026, 10:40:20 AM [31m  ERROR[39m [38;5;3m[TypeOrmModule] [39m[31mUnable to connect to the database. Retrying (6)...[39m
+Error: Access denied for user 'kaamo'@'localhost' (using password: YES)
+    at Packet.asError (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\packets\packet.js:791:17)
+    at ClientHandshake.execute (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\commands\command.js:29:26)
+    at PoolConnection.handlePacket (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:552:34)
+    at PacketParser.onPacket (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:102:12)
+    at PacketParser.executeStart (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\packet_parser.js:75:16)
+    at Socket.<anonymous> (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:109:25)
+    at Socket.emit (node:events:518:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+[31m[Nest] 15312  - [39m06/10/2026, 10:40:23 AM [31m  ERROR[39m [38;5;3m[TypeOrmModule] [39m[31mUnable to connect to the database. Retrying (7)...[39m
+Error: Access denied for user 'kaamo'@'localhost' (using password: YES)
+    at Packet.asError (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\packets\packet.js:791:17)
+    at ClientHandshake.execute (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\commands\command.js:29:26)
+    at PoolConnection.handlePacket (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:552:34)
+    at PacketParser.onPacket (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:102:12)
+    at PacketParser.executeStart (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\packet_parser.js:75:16)
+    at Socket.<anonymous> (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:109:25)
+    at Socket.emit (node:events:518:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+[31m[Nest] 15312  - [39m06/10/2026, 10:40:26 AM [31m  ERROR[39m [38;5;3m[TypeOrmModule] [39m[31mUnable to connect to the database. Retrying (8)...[39m
+Error: Access denied for user 'kaamo'@'localhost' (using password: YES)
+    at Packet.asError (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\packets\packet.js:791:17)
+    at ClientHandshake.execute (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\commands\command.js:29:26)
+    at PoolConnection.handlePacket (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:552:34)
+    at PacketParser.onPacket (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:102:12)
+    at PacketParser.executeStart (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\packet_parser.js:75:16)
+    at Socket.<anonymous> (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:109:25)
+    at Socket.emit (node:events:518:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+[31m[Nest] 15312  - [39m06/10/2026, 10:40:29 AM [31m  ERROR[39m [38;5;3m[TypeOrmModule] [39m[31mUnable to connect to the database. Retrying (9)...[39m
+Error: Access denied for user 'kaamo'@'localhost' (using password: YES)
+    at Packet.asError (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\packets\packet.js:791:17)
+    at ClientHandshake.execute (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\commands\command.js:29:26)
+    at PoolConnection.handlePacket (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:552:34)
+    at PacketParser.onPacket (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:102:12)
+    at PacketParser.executeStart (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\packet_parser.js:75:16)
+    at Socket.<anonymous> (C:\Users\A.Khazraiy\Desktop\arcopal\backend\node_modules\mysql2\lib\base\connection.js:109:25)
+    at Socket.emit (node:events:518:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+[31m[Nest] 15312  - [39m06/10/2026, 10:40:29 AM [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39mError: Access denied for user 'kaamo'@'localhost' (using password: YES)
+    at Packet.asError [90m(C:\Users\A.Khazraiy\Desktop\arcopal\backend\[39mnode_modules\[4mmysql2[24m\lib\packets\packet.js:791:17[90m)[39m
+    at ClientHandshake.execute [90m(C:\Users\A.Khazraiy\Desktop\arcopal\backend\[39mnode_modules\[4mmysql2[24m\lib\commands\command.js:29:26[90m)[39m
+    at PoolConnection.handlePacket [90m(C:\Users\A.Khazraiy\Desktop\arcopal\backend\[39mnode_modules\[4mmysql2[24m\lib\base\connection.js:552:34[90m)[39m
+    at PacketParser.onPacket [90m(C:\Users\A.Khazraiy\Desktop\arcopal\backend\[39mnode_modules\[4mmysql2[24m\lib\base\connection.js:102:12[90m)[39m
+    at PacketParser.executeStart [90m(C:\Users\A.Khazraiy\Desktop\arcopal\backend\[39mnode_modules\[4mmysql2[24m\lib\packet_parser.js:75:16[90m)[39m
+    at Socket.<anonymous> [90m(C:\Users\A.Khazraiy\Desktop\arcopal\backend\[39mnode_modules\[4mmysql2[24m\lib\base\connection.js:109:25[90m)[39m
+[90m    at Socket.emit (node:events:518:28)[39m
+[90m    at addChunk (node:internal/streams/readable:561:12)[39m
+[90m    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)[39m
+[90m    at Readable.push (node:internal/streams/readable:392:5)[39m {
+  code: [32m'ER_ACCESS_DENIED_ERROR'[39m,
+  errno: [33m1045[39m,
+  sqlState: [32m'28000'[39m,
+  sqlMessage: [32m"Access denied for user 'kaamo'@'localhost' (using password: YES)"[39m,
+  sql: [90mundefined[39m
+}

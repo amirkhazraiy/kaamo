@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
@@ -10,7 +10,7 @@ import { ProductsService } from './products.service';
 @ApiTags('products')
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(@Inject(ProductsService) private readonly productsService: ProductsService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get all products' })
@@ -26,6 +26,7 @@ export class ProductsController {
 
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create product' })
+  @ApiBody({ type: CreateProductDto })
   @Roles('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
@@ -35,6 +36,7 @@ export class ProductsController {
 
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update product' })
+  @ApiBody({ type: UpdateProductDto })
   @Roles('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch(':id')
