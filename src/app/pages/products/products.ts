@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, HostListener, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ProductCard } from '../../components/product-card/product-card';
 import { Product } from '../../models/product.model';
 import { AdminAuthService } from '../../services/admin-auth.service';
@@ -8,7 +8,7 @@ import { ProductService } from '../../services/product.service';
 
 @Component({
   selector: 'app-products',
-  imports: [FormsModule, ProductCard, RouterLink],
+  imports: [FormsModule, ProductCard],
   templateUrl: './products.html',
   styleUrl: './products.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
