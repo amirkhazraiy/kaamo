@@ -38,6 +38,28 @@
   box-sizing: border-box;
 }
 
+:root {
+  --color-primary: #2a2218;
+  --color-secondary: #7a6a50;
+  --color-accent: #c8bfa8;
+  --color-bg-main: #fafaf8;
+  --color-bg-card: #ffffff;
+  --color-bg-soft: #f5f0e8;
+  --color-border: #e8e4dc;
+  --color-text-muted: #9a8a78;
+  --color-porcelain: var(--color-bg-main);
+  --color-mist: var(--color-bg-soft);
+  --color-marble: var(--color-border);
+  --color-line: var(--color-border);
+  --color-ink: var(--color-primary);
+  --color-muted: #6a5a48;
+  --color-sage: var(--color-accent);
+  --color-sage-dark: var(--color-secondary);
+  --color-clay: #b15b4c;
+  --shadow-soft: 0 18px 48px rgba(42, 34, 24, 0.08);
+  --shadow-card: 0 4px 24px rgba(42, 34, 24, 0.08);
+}
+
 html {
   min-height: 100%;
   font-family:
@@ -49,6 +71,11 @@ html {
 body {
   min-height: 100%;
   margin: 0;
+  background: var(--color-porcelain);
+  color: var(--color-ink);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.8;
 }
 
 button,
