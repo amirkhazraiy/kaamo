@@ -1,5 +1,9 @@
 <main class="product-details" dir="rtl">
-  <a class="product-details__back" routerLink="/">بازگشت به کاتالوگ</a>
+  <nav class="product-details__breadcrumb" aria-label="مسیر صفحه">
+    <a routerLink="/">خانه</a>
+    <span>/</span>
+    <a routerLink="/">محصولات</a>
+  </nav>
 
   @if (isLoading()) {
     <section class="product-details__state" aria-live="polite">
@@ -64,6 +68,10 @@
             {{ product.stock > 0 ? 'موجود در انبار' : 'ناموجود' }}
           </span>
         </div>
+
+        <button class="product-summary__cart" type="button">
+          افزودن به سبد خرید
+        </button>
 
         <dl class="specs" aria-label="مشخصات محصول">
           <div>

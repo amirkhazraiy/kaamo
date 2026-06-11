@@ -1,27 +1,34 @@
 .product-details {
-  width: min(1180px, calc(100% - 24px));
+  width: min(1280px, calc(100% - 24px));
   margin: 0 auto;
   padding: 24px 0 48px;
   text-align: right;
 }
 
-.product-details__back {
-  display: inline-flex;
+.product-details__breadcrumb {
+  display: flex;
+  gap: 8px;
   margin-bottom: 18px;
-  color: #0f777a;
-  font-weight: 800;
-  text-decoration: none;
+  color: var(--color-text-muted);
+  font-size: 0.84rem;
+  line-height: 1.8;
 
-  &:hover,
-  &:focus-visible {
-    color: #095e61;
+  a {
+    color: var(--color-secondary);
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-primary);
+    }
   }
 }
 
 .product-details__hero {
   display: grid;
   grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
-  gap: 22px;
+  gap: 28px;
   align-items: start;
 }
 
@@ -29,10 +36,10 @@
 .product-summary,
 .similar-products,
 .product-details__state {
-  border: 1px solid #dfe7e5;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 18px 50px rgba(21, 38, 45, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--shadow-card);
 }
 
 .gallery {
@@ -44,7 +51,7 @@
   display: grid;
   place-items: center;
   min-height: 330px;
-  background: #eef3f2;
+  background: var(--color-bg-soft);
 
   img {
     display: block;
@@ -65,7 +72,7 @@
   border: 0;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.88);
-  color: #15262d;
+  color: var(--color-primary);
   cursor: pointer;
   font-size: 2.2rem;
   transform: translateY(-50%);
@@ -91,7 +98,7 @@
   overflow: hidden;
   border: 2px solid transparent;
   border-radius: 8px;
-  background: #eef3f2;
+  background: var(--color-bg-soft);
   cursor: pointer;
   padding: 0;
 
@@ -103,7 +110,7 @@
 }
 
 .gallery__thumbs .gallery__thumb--active {
-  border-color: #0f777a;
+  border-color: var(--color-primary);
 }
 
 .product-summary {
@@ -114,14 +121,18 @@
 
 .product-summary__brand {
   margin: 0;
-  color: #0f777a;
+  width: fit-content;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-secondary);
   font-size: 0.82rem;
-  font-weight: 900;
+  font-weight: 500;
+  padding: 3px 12px;
 }
 
 .product-summary__description {
   margin: 0;
-  color: #51656d;
+  color: var(--color-muted);
   line-height: 1.8;
 }
 
@@ -131,14 +142,14 @@
   justify-content: space-between;
   gap: 12px;
   padding: 14px;
-  border: 1px solid #e3ece9;
+  border: 1px solid var(--color-border);
   border-radius: 8px;
-  background: #f8fbfa;
+  background: var(--color-bg-main);
 
   strong {
-    color: #15262d;
-    font-size: 1.35rem;
-    font-weight: 900;
+    color: var(--color-primary);
+    font-size: 1.6rem;
+    font-weight: 600;
   }
 
   span {
@@ -157,15 +168,27 @@
   }
 }
 
+.product-summary__cart {
+  min-height: 48px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--color-primary);
+  color: var(--color-bg-main);
+  cursor: pointer;
+  font-size: 0.96rem;
+  font-weight: 500;
+}
+
 h1,
 h2 {
   margin: 0;
-  color: #15262d;
+  color: var(--color-primary);
 }
 
 h1 {
   font-size: clamp(1.9rem, 4vw, 3rem);
-  line-height: 1.2;
+  font-weight: 500;
+  line-height: 1.35;
 }
 
 .specs {
@@ -175,23 +198,23 @@ h1 {
 
   div {
     padding: 14px;
-    border: 1px solid #e3ece9;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    background: #f8fbfa;
+    background: var(--color-bg-main);
   }
 
   dt {
     margin-bottom: 6px;
-    color: #657980;
+    color: var(--color-text-muted);
     font-size: 0.78rem;
-    font-weight: 800;
+    font-weight: 500;
   }
 
   dd {
     margin: 0;
-    color: #24363d;
-    font-size: 1.08rem;
-    font-weight: 900;
+    color: var(--color-primary);
+    font-size: 1rem;
+    font-weight: 500;
   }
 }
 
@@ -205,9 +228,9 @@ h1 {
 
   p {
     margin: 0 0 4px;
-    color: #0f777a;
+    color: var(--color-secondary);
     font-size: 0.8rem;
-    font-weight: 900;
+    font-weight: 500;
   }
 }
 
@@ -221,7 +244,7 @@ h1 {
   display: grid;
   place-items: center;
   min-height: 320px;
-  color: #51656d;
+  color: var(--color-muted);
   text-align: center;
 
   p {
@@ -237,8 +260,8 @@ h1 {
 .loader {
   width: 42px;
   height: 42px;
-  border: 4px solid #d6e2e0;
-  border-top-color: #0f777a;
+  border: 4px solid var(--color-border);
+  border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 800ms linear infinite;
 }

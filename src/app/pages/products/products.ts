@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, computed, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ProductCard } from '../../components/product-card/product-card';
 import { Product } from '../../models/product.model';
@@ -7,7 +8,7 @@ import { ProductService } from '../../services/product.service';
 
 @Component({
   selector: 'app-products',
-  imports: [ProductCard, RouterLink],
+  imports: [FormsModule, ProductCard, RouterLink],
   templateUrl: './products.html',
   styleUrl: './products.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -17,12 +18,17 @@ export class ProductsPage {
   private readonly authService = inject(AdminAuthService);
   private readonly router = inject(Router);
   private readonly numberFormatter = new Intl.NumberFormat('fa-IR');
+  private loginRedirectTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly searchTerm = signal<string>('');
   readonly selectedBrand = signal<string>('all');
   readonly selectedCategory = signal<string>('all');
   readonly selectedProduct = signal<Product | null>(null);
   readonly selectedImageIndex = signal<number>(0);
+  readonly loginModalOpen = signal<boolean>(false);
+  readonly phoneNumber = signal<string>('');
+  readonly loginError = signal<string | null>(null);
+  readonly loginSuccessMessage = signal<string | null>(null);
 
   readonly products = computed<readonly Product[]>(() =>
     this.productService.products().filter((product) => product.status === 'active'),
@@ -30,6 +36,7 @@ export class ProductsPage {
   readonly isLoading = this.productService.isLoading;
   readonly error = this.productService.error;
   readonly isAdminLoggedIn = this.authService.isLoggedIn;
+  readonly currentPhone = this.authService.currentPhone;
 
   readonly brands = computed<readonly string[]>(() => {
     const brandSet = new Set(this.products().map((product) => product.brand));
@@ -69,6 +76,13 @@ export class ProductsPage {
     this.productService.loadProducts();
   }
 
+  @HostListener('document:keydown.escape')
+  closeLoginOnEscape(): void {
+    if (this.loginModalOpen()) {
+      this.closeLoginModal();
+    }
+  }
+
   updateSearchTerm(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.searchTerm.set(input.value);
@@ -81,6 +95,51 @@ export class ProductsPage {
 
   updateCategory(category: string): void {
     this.selectedCategory.set(category);
+  }
+
+  updatePhoneNumber(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.phoneNumber.set(input.value.replace(/\D/g, '').slice(0, 11));
+    this.loginError.set(null);
+  }
+
+  openLoginModal(): void {
+    this.clearLoginTimer();
+    this.resetLoginModal();
+    this.loginModalOpen.set(true);
+    this.setBodyScrollLocked(true);
+  }
+
+  closeLoginModal(): void {
+    this.clearLoginTimer();
+    this.loginModalOpen.set(false);
+    this.setBodyScrollLocked(false);
+    this.resetLoginModal();
+  }
+
+  loginWithPhone(): void {
+    const phone = this.phoneNumber().trim();
+
+    if (!/^09\d{9}$/.test(phone)) {
+      this.loginError.set('شماره موبایل معتبر نیست');
+      return;
+    }
+
+    const role = this.authService.loginWithPhone(phone);
+    this.loginError.set(null);
+    this.loginSuccessMessage.set(
+      role === 'admin' ? 'خوش آمدید، ادمین!' : 'ورود موفق! خوش آمدید.',
+    );
+
+    this.loginRedirectTimer = setTimeout(() => {
+      if (role === 'admin') {
+        void this.router.navigate(['/admin/dashboard']);
+        this.setBodyScrollLocked(false);
+        return;
+      }
+
+      this.closeLoginModal();
+    }, 1500);
   }
 
   formatCount(value: number): string {
@@ -122,5 +181,28 @@ export class ProductsPage {
 
   trackByProductId(_: number, product: Product): number {
     return product.id;
+  }
+
+  private resetLoginModal(): void {
+    this.phoneNumber.set('');
+    this.loginError.set(null);
+    this.loginSuccessMessage.set(null);
+  }
+
+  private clearLoginTimer(): void {
+    if (!this.loginRedirectTimer) {
+      return;
+    }
+
+    clearTimeout(this.loginRedirectTimer);
+    this.loginRedirectTimer = null;
+  }
+
+  private setBodyScrollLocked(isLocked: boolean): void {
+    if (typeof document === 'undefined') {
+      return;
+    }
+
+    document.body.style.overflow = isLocked ? 'hidden' : '';
   }
 }

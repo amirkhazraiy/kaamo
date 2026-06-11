@@ -6,7 +6,7 @@ export const routes: Routes = [
   {
     path: '',
     component: ProductsPage,
-    title: 'کاتالوگ محصولات آرکوپال',
+    title: 'کاتالوگ محصولات Kaamo',
   },
   {
     path: 'products/:id',
@@ -15,6 +15,11 @@ export const routes: Routes = [
         (component) => component.ProductDetailsPage,
       ),
     title: 'جزئیات محصول',
+  },
+  {
+    path: 'admin/dashboard',
+    redirectTo: 'admin/products',
+    pathMatch: 'full',
   },
   {
     path: 'admin/login',

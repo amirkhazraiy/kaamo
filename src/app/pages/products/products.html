@@ -4,31 +4,40 @@
   </a>
 
   <header class="store-header" aria-label="ناوبری فروشگاه">
-    <a class="store-header__logo" href="/" aria-label="آرکوپال استور">
-      <span>Arcopal</span>
-      <strong>آرکوپال استور</strong>
-    </a>
+    <div class="store-header__top">
+      <a class="store-header__logo" href="/" aria-label="Kaamo">
+        <span aria-hidden="true">K</span>
+        <strong>Kaamo</strong>
+      </a>
 
-    <label class="store-search">
-      <span>جست‌وجو</span>
-      <input
-        type="search"
-        placeholder="جست‌وجوی نام محصول"
-        [value]="searchTerm()"
-        (input)="updateSearchTerm($event)"
-      />
-    </label>
+      <div class="store-header__actions" aria-label="ابزارهای کاربری">
+        <button type="button" aria-label="علاقه‌مندی‌ها">♡</button>
+        <button type="button" aria-label="پروفایل">👤</button>
+        <button type="button" aria-label="سبد خرید">🛒</button>
+        <button class="store-header__login" type="button" (click)="openLoginModal()">
+          {{ currentPhone() ? 'حساب من' : 'ورود / ادمین' }}
+        </button>
+      </div>
+    </div>
 
-    <nav class="store-header__links" aria-label="لینک‌های اصلی">
-      <a href="/">خانه</a>
-      <a href="#products">همه محصولات</a>
-      <a href="tel:02155321762">تماس</a>
-      @if (isAdminLoggedIn()) {
-        <a class="store-header__admin-link" routerLink="/admin/products">ورود به داشبورد</a>
-      } @else {
-        <a class="store-header__admin-link" routerLink="/admin/login">ورود ادمین</a>
-      }
-    </nav>
+    <div class="store-header__bottom">
+      <nav class="store-header__links" aria-label="لینک‌های اصلی">
+        <a href="/">خانه</a>
+        <a href="#products">همه محصولات</a>
+        <a href="#categories">دسته‌بندی‌ها</a>
+        <a href="#footer">تماس با ما</a>
+      </nav>
+
+      <label class="store-search">
+        <span>جست‌وجو</span>
+        <input
+          type="search"
+          placeholder="جست‌وجوی نام محصول"
+          [value]="searchTerm()"
+          (input)="updateSearchTerm($event)"
+        />
+      </label>
+    </div>
   </header>
 
   <section class="hero" aria-labelledby="store-title">
@@ -39,16 +48,14 @@
         مدل‌های پرفروش را بر اساس دسته، برند و نام محصول مرور کنید و با یک نگاه قیمت،
         تخفیف و موجودی هر سرویس را ببینید.
       </p>
-    </div>
-
-    <div class="hero__deal" aria-label="پیشنهاد فروشگاه">
-      <span>فروش ویژه</span>
-      <strong>{{ formatCount(featuredProducts().length || filteredProducts().length) }}</strong>
-      <small>مدل منتخب آماده بررسی</small>
+      <div class="hero__actions">
+        <a class="btn-primary" href="#products">مشاهده محصولات</a>
+        <a class="btn-secondary" href="#footer">درباره ما</a>
+      </div>
     </div>
   </section>
 
-  <section class="category-strip" aria-label="دسته‌بندی محصولات">
+  <section class="category-strip" id="categories" aria-label="دسته‌بندی محصولات">
     <button
       type="button"
       [class.category-strip__item--active]="selectedCategory() === 'all'"
@@ -130,7 +137,95 @@
       </div>
     </section>
   }
+
+  <footer class="store-footer" id="footer">
+    <div class="store-footer__grid">
+      <section class="store-footer__brand" aria-label="معرفی Kaamo">
+        <h2>Kaamo</h2>
+        <p>فروشگاه تخصصی ظروف اوپال، آرکوپال و سرویس غذاخوری برای خانه‌های روشن و آرام.</p>
+        <div class="store-footer__socials" aria-label="شبکه‌های اجتماعی">
+          <a href="#" aria-label="اینستاگرام">Instagram</a>
+          <a href="#" aria-label="تلگرام">Telegram</a>
+        </div>
+      </section>
+
+      <section aria-label="دسترسی سریع">
+        <h3>دسترسی سریع</h3>
+        <a href="/">خانه</a>
+        <a href="#products">همه محصولات</a>
+        <a href="#footer">تماس با ما</a>
+        <a href="#footer">درباره ما</a>
+      </section>
+
+      <section aria-label="دسته‌بندی‌ها">
+        <h3>دسته‌بندی‌ها</h3>
+        @for (category of categories().slice(0, 4); track category) {
+          <a href="#products" (click)="updateCategory(category)">{{ category }}</a>
+        }
+      </section>
+
+      <section aria-label="اطلاعات تماس">
+        <h3>تماس</h3>
+        <p>تلفن: 02155321762</p>
+        <p>ساعت کاری: شنبه تا پنجشنبه، ۹ تا ۱۸</p>
+        <p>تهران، بازار ظروف و لوازم خانه</p>
+      </section>
+    </div>
+
+    <div class="store-footer__bottom">
+      <span>تمام حقوق محفوظ است — Kaamo ۱۴۰۴</span>
+      <span>پرداخت امن و ارسال سریع</span>
+    </div>
+  </footer>
 </main>
+
+@if (loginModalOpen()) {
+  <section
+    class="login-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="login-modal-title"
+    (click)="closeLoginModal()"
+  >
+    <div class="login-modal__box" dir="rtl" (click)="$event.stopPropagation()">
+      <button class="login-modal__close" type="button" aria-label="بستن" (click)="closeLoginModal()">
+        ×
+      </button>
+
+      <div class="login-modal__logo" id="login-modal-title">KAAMO</div>
+      <p class="login-modal__subtitle">ورود به حساب کاربری</p>
+
+      @if (loginSuccessMessage(); as successMessage) {
+        <div class="login-modal__success" aria-live="polite">
+          <div class="login-modal__success-icon">✓</div>
+          <p>{{ successMessage }}</p>
+        </div>
+      } @else {
+        <form class="login-modal__form" (ngSubmit)="loginWithPhone()">
+          <label>
+            <span>شماره موبایل</span>
+            <input
+              type="tel"
+              inputmode="numeric"
+              autocomplete="tel"
+              maxlength="11"
+              placeholder="09XX XXX XXXX"
+              dir="ltr"
+              [value]="phoneNumber()"
+              (input)="updatePhoneNumber($event)"
+            />
+          </label>
+
+          @if (loginError(); as errorMessage) {
+            <strong class="login-modal__error">{{ errorMessage }}</strong>
+          }
+
+          <button class="login-modal__submit" type="submit">ورود</button>
+        </form>
+      }
+    </div>
+  </section>
+}
 
 @if (selectedProduct(); as product) {
   <section class="album" role="dialog" aria-modal="true" [attr.aria-label]="product.name">

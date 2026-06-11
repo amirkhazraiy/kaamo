@@ -1,6 +1,8 @@
 :host {
   display: block;
   min-height: 100vh;
-  background: #f5f6f8;
-  color: #151b23;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(183, 135, 101, 0.12), transparent 30%),
+    linear-gradient(180deg, var(--color-porcelain) 0%, var(--color-mist) 100%);
+  color: var(--color-ink);
 }
