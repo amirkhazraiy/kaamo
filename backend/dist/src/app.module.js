@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const typeorm_1 = require("@nestjs/typeorm");
 const auth_module_1 = require("./auth/auth.module");
+const refresh_session_entity_1 = require("./auth/refresh-session.entity");
 const product_entity_1 = require("./products/product.entity");
 const products_module_1 = require("./products/products.module");
 const uploads_module_1 = require("./uploads/uploads.module");
@@ -42,7 +43,7 @@ function createTypeOrmOptions(config) {
         username: config.get('DB_USERNAME'),
         password: config.get('DB_PASSWORD'),
         database: config.get('DB_NAME'),
-        entities: [user_entity_1.User, product_entity_1.Product],
+        entities: [user_entity_1.User, product_entity_1.Product, refresh_session_entity_1.RefreshSession],
         synchronize: false,
         charset: 'utf8mb4',
     };

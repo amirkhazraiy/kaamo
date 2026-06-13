@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
+import { RefreshSession } from './auth/refresh-session.entity';
 import { Product } from './products/product.entity';
 import { ProductsModule } from './products/products.module';
 import { UploadsModule } from './uploads/uploads.module';
@@ -31,7 +32,7 @@ function createTypeOrmOptions(config: ConfigService) {
     username: config.get<string>('DB_USERNAME'),
     password: config.get<string>('DB_PASSWORD'),
     database: config.get<string>('DB_NAME'),
-    entities: [User, Product],
+    entities: [User, Product, RefreshSession],
     synchronize: false,
     charset: 'utf8mb4',
   };

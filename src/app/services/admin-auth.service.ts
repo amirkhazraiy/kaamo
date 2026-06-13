@@ -1,13 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, finalize, shareReplay, tap } from 'rxjs';
 import { API_BASE_URL } from '../config/api.config';
 
-const TOKEN_KEY = 'arcopal_admin_token';
-const USER_KEY = 'arcopal_admin_user';
+const LEGACY_TOKEN_KEY = 'arcopal_admin_token';
+const LEGACY_USER_KEY = 'arcopal_admin_user';
 const KAAMO_USER_KEY = 'kaamo_user';
 const KAAMO_ROLE_KEY = 'kaamo_role';
-const ADMIN_PHONE = '09912535935';
 
 export type KaamoRole = 'admin' | 'user';
 
@@ -18,9 +17,8 @@ export interface AdminUser {
   role: string;
 }
 
-interface LoginResponse {
-  message: string;
-  token: string;
+interface AuthResponse {
+  message?: string;
   user: AdminUser;
 }
 
@@ -29,84 +27,97 @@ interface LoginResponse {
 })
 export class AdminAuthService {
   private readonly http = inject(HttpClient);
+  private refreshRequest: Observable<AuthResponse> | null = null;
 
-  readonly currentUser = signal<AdminUser | null>(this.readUser());
+  readonly currentUser = signal<AdminUser | null>(null);
   readonly currentPhone = signal<string | null>(this.readPhone());
   readonly currentRole = signal<KaamoRole | null>(this.readRole());
-  readonly isLoggedIn = signal<boolean>(this.readToken() !== null || this.readRole() === 'admin');
+  readonly isLoggedIn = signal<boolean>(false);
 
-  login(email: string, password: string): Observable<LoginResponse> {
+  constructor() {
+    this.clearLegacyStorage();
+    queueMicrotask(() => {
+      this.validateSession().subscribe({ error: () => undefined });
+    });
+  }
+
+  login(email: string, password: string): Observable<AuthResponse> {
     return this.http
-      .post<LoginResponse>(`${API_BASE_URL}/auth/login`, {
+      .post<AuthResponse>(`${API_BASE_URL}/auth/login`, {
         email: email.trim().toLowerCase(),
         password,
       })
-      .pipe(
-        tap((response) => {
-          this.persistSession(response.token, response.user);
-          this.currentUser.set(response.user);
-          this.isLoggedIn.set(true);
-        }),
-      );
+      .pipe(tap((response) => this.setAuthenticatedUser(response.user)));
   }
 
-  getToken(): string | null {
-    return this.readToken();
+  validateSession(): Observable<AuthResponse> {
+    return this.http
+      .get<AuthResponse>(`${API_BASE_URL}/auth/session`)
+      .pipe(tap((response) => this.setAuthenticatedUser(response.user)));
+  }
+
+  refreshSession(): Observable<AuthResponse> {
+    if (!this.refreshRequest) {
+      this.refreshRequest = this.http
+        .post<AuthResponse>(`${API_BASE_URL}/auth/refresh`, {})
+        .pipe(
+          tap((response) => this.setAuthenticatedUser(response.user)),
+          finalize(() => {
+            this.refreshRequest = null;
+          }),
+          shareReplay({ bufferSize: 1, refCount: false }),
+        );
+    }
+
+    return this.refreshRequest;
   }
 
   loginWithPhone(phone: string): KaamoRole {
     const normalizedPhone = phone.trim();
-    const role: KaamoRole = normalizedPhone === ADMIN_PHONE ? 'admin' : 'user';
+    const role: KaamoRole = 'user';
 
+    // Phone login is a storefront preference only; admin authorization always comes from the API.
     this.persistPhoneSession(normalizedPhone, role);
     this.currentPhone.set(normalizedPhone);
     this.currentRole.set(role);
-    this.isLoggedIn.set(role === 'admin' || this.readToken() !== null);
 
     return role;
   }
 
   logout(): void {
+    this.clearSession();
+    this.revokeServerSession();
+  }
+
+  endAdminSession(): void {
+    this.currentUser.set(null);
+    this.isLoggedIn.set(false);
+    this.clearLegacyStorage();
+    this.revokeServerSession();
+  }
+
+  clearSession(): void {
     this.currentUser.set(null);
     this.currentPhone.set(null);
     this.currentRole.set(null);
     this.isLoggedIn.set(false);
-    this.clearSession();
-  }
+    this.clearLegacyStorage();
 
-  private readToken(): string | null {
-    if (typeof localStorage === 'undefined') {
-      return null;
-    }
-
-    return localStorage.getItem(TOKEN_KEY);
-  }
-
-  private readUser(): AdminUser | null {
-    if (typeof localStorage === 'undefined') {
-      return null;
-    }
-
-    const storedUser = localStorage.getItem(USER_KEY);
-
-    if (!storedUser) {
-      return null;
-    }
-
-    try {
-      return JSON.parse(storedUser) as AdminUser;
-    } catch {
-      return null;
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.removeItem(KAAMO_USER_KEY);
+      sessionStorage.removeItem(KAAMO_ROLE_KEY);
     }
   }
 
-  private persistSession(token: string, user: AdminUser): void {
-    if (typeof localStorage === 'undefined') {
-      return;
-    }
+  private setAuthenticatedUser(user: AdminUser): void {
+    this.currentUser.set(user);
+    this.isLoggedIn.set(true);
+  }
 
-    localStorage.setItem(TOKEN_KEY, token);
-    localStorage.setItem(USER_KEY, JSON.stringify(user));
+  private revokeServerSession(): void {
+    this.http
+      .post(`${API_BASE_URL}/auth/logout`, {})
+      .subscribe({ error: () => undefined });
   }
 
   private readPhone(): string | null {
@@ -122,9 +133,7 @@ export class AdminAuthService {
       return null;
     }
 
-    const role = sessionStorage.getItem(KAAMO_ROLE_KEY);
-
-    return role === 'admin' || role === 'user' ? role : null;
+    return sessionStorage.getItem(KAAMO_ROLE_KEY) === 'user' ? 'user' : null;
   }
 
   private persistPhoneSession(phone: string, role: KaamoRole): void {
@@ -136,17 +145,13 @@ export class AdminAuthService {
     sessionStorage.setItem(KAAMO_ROLE_KEY, role);
   }
 
-  private clearSession(): void {
+  private clearLegacyStorage(): void {
     if (typeof localStorage === 'undefined') {
       return;
     }
 
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.removeItem(KAAMO_USER_KEY);
-      sessionStorage.removeItem(KAAMO_ROLE_KEY);
-    }
+    // Remove bearer tokens written by older builds; new admin sessions live in HttpOnly cookies.
+    localStorage.removeItem(LEGACY_TOKEN_KEY);
+    localStorage.removeItem(LEGACY_USER_KEY);
   }
 }

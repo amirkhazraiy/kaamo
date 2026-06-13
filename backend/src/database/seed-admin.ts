@@ -6,9 +6,9 @@ async function seedAdmin(): Promise<void> {
   await AppDataSource.initialize();
 
   const users = AppDataSource.getRepository(User);
-  const email = (process.env.ADMIN_EMAIL ?? 'admin@example.com').trim().toLowerCase();
-  const password = process.env.ADMIN_PASSWORD ?? 'admin123';
-  const name = process.env.ADMIN_NAME ?? 'Arcopal Admin';
+  const email = requireSecret('ADMIN_EMAIL').trim().toLowerCase();
+  const password = requireSecret('ADMIN_PASSWORD');
+  const name = requireSecret('ADMIN_NAME');
   const saltRounds = Number(process.env.BCRYPT_SALT_ROUNDS ?? 12);
   const passwordHash = await bcrypt.hash(password, saltRounds);
 
@@ -25,6 +25,16 @@ async function seedAdmin(): Promise<void> {
 
   await AppDataSource.destroy();
   console.log(`Admin user seeded: ${email}`);
+}
+
+function requireSecret(name: 'ADMIN_EMAIL' | 'ADMIN_PASSWORD' | 'ADMIN_NAME'): string {
+  const value = process.env[name]?.trim();
+
+  if (!value || value.startsWith('YOUR_')) {
+    throw new Error(`${name} must be set to a non-placeholder value.`);
+  }
+
+  return value;
 }
 
 seedAdmin().catch(async (error) => {

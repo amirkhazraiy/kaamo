@@ -2,14 +2,18 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
+import { LoginAttemptsService } from './login-attempts.service';
+import { RefreshSession } from './refresh-session.entity';
 
 @Module({
   imports: [
     UsersModule,
+    TypeOrmModule.forFeature([RefreshSession]),
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -24,13 +28,13 @@ import { JwtStrategy } from './jwt.strategy';
         return {
           secret,
           signOptions: {
-            expiresIn: (config.get<string>('JWT_EXPIRES_IN') ?? '1d') as `${number}${'s' | 'm' | 'h' | 'd'}`,
+            expiresIn: '15m',
           },
         };
       },
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, LoginAttemptsService],
 })
 export class AuthModule {}

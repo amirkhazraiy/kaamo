@@ -16,8 +16,8 @@ Update `.env` with your MySQL connection settings:
 DB_HOST=localhost
 DB_PORT=3306
 DB_NAME=arcopal_store
-DB_USERNAME=arcopal_user
-DB_PASSWORD=your-mysql-password
+DB_USERNAME=YOUR_DB_USERNAME_HERE
+DB_PASSWORD=YOUR_DB_PASSWORD_HERE
 ```
 
 ## MySQL Database
@@ -50,8 +50,8 @@ backend/database/mysql/001_create_tables.sql
 DB_HOST=your-mysql-host
 DB_PORT=3306
 DB_NAME=arcopal_store
-DB_USERNAME=your-mysql-user
-DB_PASSWORD=your-mysql-password
+DB_USERNAME=YOUR_DB_USERNAME_HERE
+DB_PASSWORD=YOUR_DB_PASSWORD_HERE
 
 SQLSERVER_HOST=localhost
 SQLSERVER_PORT=1433
@@ -65,6 +65,12 @@ npm run migrate:sqlserver-to-mysql
 ```
 
 The migration keeps existing bcrypt password hashes and copies users/products, including product image URLs.
+
+For an existing database, also run:
+
+```text
+backend/database/mysql/004_create_refresh_sessions.sql
+```
 
 ## Run
 
@@ -85,14 +91,17 @@ Default URLs:
 
 - Angular: `http://localhost:4200`
 - NestJS API: `http://localhost:3000/api`
-- Swagger: `http://localhost:3000/api/docs`
+- Swagger (development only): `http://localhost:3000/api/docs`
 
 ## Endpoints
 
 - `POST /api/auth/login`
+- `POST /api/auth/refresh`
+- `POST /api/auth/logout`
+- `GET /api/auth/session`
 - `GET /api/products`
 - `GET /api/products/:id`
-- `POST /api/products` requires `Authorization: Bearer <token>`
-- `PATCH /api/products/:id` requires `Authorization: Bearer <token>`
-- `DELETE /api/products/:id` requires `Authorization: Bearer <token>`
-- `POST /api/uploads/product-image` requires `Authorization: Bearer <token>`
+- Product mutations and image uploads require the secure admin session cookies.
+
+Access tokens expire after 15 minutes. Refresh tokens rotate on use, are stored only as hashes in
+the database, and are revoked by logout.

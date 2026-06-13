@@ -3,6 +3,7 @@ import { config } from 'dotenv';
 import { DataSource } from 'typeorm';
 import { Product } from '../products/product.entity';
 import { User } from '../users/user.entity';
+import { RefreshSession } from '../auth/refresh-session.entity';
 
 config();
 
@@ -13,7 +14,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  entities: [User, Product],
+  entities: [User, Product, RefreshSession],
   synchronize: false,
   charset: 'utf8mb4',
 });

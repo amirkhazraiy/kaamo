@@ -60,6 +60,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create product' }),
+    (0, swagger_1.ApiBody)({ type: create_product_dto_1.CreateProductDto }),
     (0, roles_decorator_1.Roles)('admin'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, common_1.Post)(),
@@ -71,6 +72,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Update product' }),
+    (0, swagger_1.ApiBody)({ type: update_product_dto_1.UpdateProductDto }),
     (0, roles_decorator_1.Roles)('admin'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, roles_guard_1.RolesGuard),
     (0, common_1.Patch)(':id'),
@@ -94,6 +96,7 @@ __decorate([
 exports.ProductsController = ProductsController = __decorate([
     (0, swagger_1.ApiTags)('products'),
     (0, common_1.Controller)('products'),
+    __param(0, (0, common_1.Inject)(products_service_1.ProductsService)),
     __metadata("design:paramtypes", [products_service_1.ProductsService])
 ], ProductsController);
 //# sourceMappingURL=products.controller.js.map

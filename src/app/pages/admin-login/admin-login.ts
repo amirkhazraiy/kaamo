@@ -15,7 +15,7 @@ export class AdminLoginPage {
   private readonly authService = inject(AdminAuthService);
   private readonly router = inject(Router);
 
-  readonly email = signal<string>('admin@example.com');
+  readonly email = signal<string>('');
   readonly password = signal<string>('');
   readonly isLoading = signal<boolean>(false);
   readonly error = signal<string | null>(null);

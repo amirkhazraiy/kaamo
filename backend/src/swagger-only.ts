@@ -1,8 +1,10 @@
 import { Module, ServiceUnavailableException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
+import { LoginAttemptsService } from './auth/login-attempts.service';
 import { ProductsController } from './products/products.controller';
 import { ProductsService } from './products/products.service';
 import { UploadsController } from './uploads/uploads.controller';
@@ -20,8 +22,19 @@ const notAvailable = () => {
       provide: AuthService,
       useValue: {
         login: notAvailable,
+        refresh: notAvailable,
+        logout: notAvailable,
       },
     },
+    {
+      provide: LoginAttemptsService,
+      useValue: {
+        assertAllowed: notAvailable,
+        recordFailure: () => undefined,
+        recordSuccess: () => undefined,
+      },
+    },
+    ConfigService,
     {
       provide: ProductsService,
       useValue: {
@@ -37,6 +50,10 @@ const notAvailable = () => {
 class SwaggerOnlyModule {}
 
 async function bootstrap(): Promise<void> {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Swagger-only server is disabled in production.');
+  }
+
   const app = await NestFactory.create(SwaggerOnlyModule);
   app.setGlobalPrefix('api');
 
@@ -44,7 +61,7 @@ async function bootstrap(): Promise<void> {
     .setTitle('Arcopal Store API')
     .setDescription('NestJS REST API for Arcopal store authentication and product management.')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addCookieAuth('arcopal_access')
     .build();
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api/docs', app, swaggerDocument);

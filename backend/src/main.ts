@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NextFunction, Request, Response, static as serveStatic } from 'express';
+import helmet from 'helmet';
 import { join } from 'path';
 import { AppModule } from './app.module';
 
@@ -13,7 +14,39 @@ async function bootstrap(): Promise<void> {
   const expressApp = app.getHttpAdapter().getInstance();
   const requestLogger = new Logger('HTTP');
 
+  const isProduction = config.get<string>('NODE_ENV') === 'production';
+  const trustProxy = Number(config.get<string>('TRUST_PROXY_HOPS') ?? 0);
+
+  if (trustProxy > 0) {
+    expressApp.set('trust proxy', trustProxy);
+  }
+
   expressApp.disable('etag');
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'none'"],
+          imgSrc: ["'self'", 'data:'],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          scriptSrc: isProduction ? ["'self'"] : ["'self'", "'unsafe-inline'"],
+          connectSrc: ["'self'"],
+          frameAncestors: ["'none'"],
+        },
+      },
+      crossOriginResourcePolicy: false,
+      frameguard: { action: 'deny' },
+      hsts: isProduction
+        ? {
+            maxAge: 31_536_000,
+            includeSubDomains: true,
+            preload: true,
+          }
+        : false,
+      noSniff: true,
+      referrerPolicy: { policy: 'no-referrer' },
+    }),
+  );
   app.use('/uploads', serveStatic(join(process.cwd(), 'uploads')));
 
   app.use((request: Request, response: Response, next: NextFunction) => {
@@ -39,7 +72,8 @@ async function bootstrap(): Promise<void> {
   app.enableCors({
     origin: config.get<string>('FRONTEND_ORIGIN') ?? 'http://localhost:4200',
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true,
   });
 
   app.setGlobalPrefix('api');
@@ -57,14 +91,16 @@ async function bootstrap(): Promise<void> {
     }),
   );
 
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('Arcopal Store API')
-    .setDescription('NestJS REST API for Arcopal store authentication and product management.')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api/docs', app, swaggerDocument);
+  if (!isProduction) {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle('Arcopal Store API')
+      .setDescription('NestJS REST API for Arcopal store authentication and product management.')
+      .setVersion('1.0')
+      .addCookieAuth('arcopal_access')
+      .build();
+    const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup('api/docs', app, swaggerDocument);
+  }
 
   const port = config.get<number>('PORT') ?? 3000;
   await app.listen(port);

@@ -10,13 +10,13 @@ GO
 -- That command hashes ADMIN_PASSWORD with bcrypt and upserts the admin user.
 -- This SQL-only fallback requires you to paste a bcrypt hash manually.
 
-DECLARE @Email NVARCHAR(255) = N'admin@example.com';
-DECLARE @Name NVARCHAR(120) = N'Arcopal Admin';
-DECLARE @PasswordHash NVARCHAR(255) = N'REPLACE_WITH_BCRYPT_HASH';
+DECLARE @Email NVARCHAR(255) = N'YOUR_ADMIN_EMAIL_HERE';
+DECLARE @Name NVARCHAR(120) = N'YOUR_ADMIN_NAME_HERE';
+DECLARE @PasswordHash NVARCHAR(255) = N'YOUR_BCRYPT_PASSWORD_HASH_HERE';
 
-IF @PasswordHash = N'REPLACE_WITH_BCRYPT_HASH'
+IF @Email LIKE N'YOUR_%' OR @Name LIKE N'YOUR_%' OR @PasswordHash LIKE N'YOUR_%'
 BEGIN
-  THROW 50000, 'Replace @PasswordHash with a bcrypt hash, or use npm run seed:admin.', 1;
+  THROW 50000, 'Replace all admin placeholders, or use npm run seed:admin.', 1;
 END;
 
 IF NOT EXISTS (SELECT 1 FROM dbo.users WHERE email = @Email)
