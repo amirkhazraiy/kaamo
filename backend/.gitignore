@@ -11,6 +11,11 @@
 npm-debug.log
 yarn-error.log
 
+# Runtime files
+.env
+/uploads
+*.log
+
 # IDEs and editors
 .idea/
 .project
@@ -37,22 +42,6 @@ yarn-error.log
 testem.log
 /typings
 __screenshots__/
-
-# System files
-.DS_Store
-Thumbs.db
-# root .gitignore
-/dist
-
-# backend/.gitignore
-/dist
-.env
-/uploads
-*.log_/
-
-# System files
-.DS_Store
-Thumbs.db_/
 
 # System files
 .DS_Store

@@ -6,7 +6,7 @@ export const routes: Routes = [
   {
     path: '',
     component: ProductsPage,
-    title: 'کاتالوگ محصولات Kaamo',
+    title: 'فروشگاه کامو',
   },
   {
     path: 'products/:id',
