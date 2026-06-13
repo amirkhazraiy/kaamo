@@ -2,24 +2,14 @@
 
 # Compiled output
 /dist
-/docs
 /tmp
 /out-tsc
 /bazel-out
-/3rdpartylicenses.txt
-/favicon.ico
-/favicon.icon
-/index.html
-/main-*.js
-/polyfills-*.js
-/prerendered-routes.json
-/styles-*.css
 
 # Node
 /node_modules
 npm-debug.log
 yarn-error.log
-*.log
 
 # IDEs and editors
 .idea/

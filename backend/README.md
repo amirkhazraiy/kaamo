@@ -89,9 +89,9 @@ npm start
 
 Default URLs:
 
-- Angular: `http://localhost:4200`
-- NestJS API: `http://localhost:3000/api`
-- Swagger (development only): `http://localhost:3000/api/docs`
+- Angular: `https://localhost:4200`
+- NestJS API: `https://localhost:3000/api`
+- Swagger (development only): `https://localhost:3000/api/docs`
 
 ## Endpoints
 

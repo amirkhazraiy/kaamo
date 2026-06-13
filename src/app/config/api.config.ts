@@ -1,4 +1,4 @@
-const LOCAL_API_BASE_URL = 'http://localhost:3000/api';
+const LOCAL_API_BASE_URL = 'https://localhost:3000/api';
 
 const PRODUCTION_API_BASE_URL = '/api';
 

@@ -70,7 +70,7 @@ async function bootstrap(): Promise<void> {
   });
 
   app.enableCors({
-    origin: config.get<string>('FRONTEND_ORIGIN') ?? 'http://localhost:4200',
+    origin: config.get<string>('FRONTEND_ORIGIN') ?? 'https://localhost:4200',
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type'],
     credentials: true,
